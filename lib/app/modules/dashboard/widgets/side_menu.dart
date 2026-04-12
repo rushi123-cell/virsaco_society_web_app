@@ -71,15 +71,25 @@ class SideMenu extends GetView<DashboardController> {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: AppColors.primary,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                ),
+              ],
             ),
-            child: const Icon(
-              Icons.domain,
-              color: Colors.white,
-              size: 24,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(
+                "assets/images/logo.png",
+                height: 40,
+                width: 40,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(width: 15),
