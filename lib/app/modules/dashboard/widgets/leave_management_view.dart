@@ -43,7 +43,7 @@ class LeaveManagementView extends GetView<DashboardController> {
             borderRadius: BorderRadius.circular(16),
           ),
           child: const Icon(
-            Icons.calendar_month,
+            Icons.calendar_today_rounded,
             color: AppColors.primary,
             size: 28,
           ),
@@ -67,6 +67,7 @@ class LeaveManagementView extends GetView<DashboardController> {
           ],
         ),
         const Spacer(),
+        // Role Toggle
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
@@ -79,7 +80,7 @@ class LeaveManagementView extends GetView<DashboardController> {
           child: Row(
             children: [
               Obx(() => Text(
-                controller.isDirector.value ? "Director Mode" : "Employee Mode",
+                controller.isDirector.value ? "Director" : "Employee",
                 style: GoogleFonts.inter(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -117,7 +118,7 @@ class LeaveManagementView extends GetView<DashboardController> {
               onTap: () => controller.changeLeaveSubSection(0),
             ),
             _SubNavItem(
-              title: "Leave Status",
+              title: "Leave History",
               icon: Icons.history,
               isSelected: controller.selectedLeaveSubSection.value == 1,
               onTap: () => controller.changeLeaveSubSection(1),
@@ -200,16 +201,24 @@ class LeaveManagementView extends GetView<DashboardController> {
                 const Icon(Icons.warning_amber_rounded, color: AppColors.warning, size: 28),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Text(
-                    "You can have max 4 pending applications. Please contact HR for urgent requests.",
-                    style: GoogleFonts.inter(fontSize: 13, color: AppColors.secondary.withOpacity(0.7)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Leave Application Policy",
+                        style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.warning, fontSize: 14),
+                      ),
+                      Text(
+                        "You can have max 4 pending applications. Please contact HR for urgent requests.",
+                        style: GoogleFonts.inter(fontSize: 13, color: AppColors.secondary.withOpacity(0.7)),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 40),
-          // Form Fields in Row/Column layout as requested
           Row(
             children: [
               Expanded(child: _buildFormField("Leave Type", ["CL (Casual)", "PL (Paid)", "Sick Leave"], Icons.category_outlined)),
@@ -220,9 +229,8 @@ class LeaveManagementView extends GetView<DashboardController> {
           const SizedBox(height: 24),
           Row(
             children: [
-              Expanded(child: _buildFormField("Date Selection", ["Single Date", "Date Range"], Icons.calendar_today)),
+              Expanded(child: _buildFormField("Range Selection", ["Single Date", "Date Range"], Icons.date_range)),
               const SizedBox(width: 24),
-              // Integrated Date Picker as requested
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,11 +381,12 @@ class LeaveManagementView extends GetView<DashboardController> {
             itemCount: 4,
             separatorBuilder: (context, index) => const SizedBox(height: 16),
             itemBuilder: (context, index) => _ApprovalCard(
-              name: "Employee ${index + 1}",
-              type: "CL",
+              name: "Staff Member ${index + 1}",
+              type: "Casual Leave",
               duration: "Full Day",
               reason: "Personal work at hometown.",
               dates: "Apr 20, 2024",
+              avatarColor: [Colors.blue, Colors.orange, Colors.teal, Colors.purple][index % 4],
             ),
           ),
         ),
@@ -492,17 +501,23 @@ class _ApprovalCard extends StatelessWidget {
   final String duration;
   final String dates;
   final String reason;
+  final Color avatarColor;
 
-  const _ApprovalCard({required this.name, required this.type, required this.duration, required this.dates, required this.reason});
+  const _ApprovalCard({required this.name, required this.type, required this.duration, required this.dates, required this.reason, required this.avatarColor});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(color: AppColors.white, borderRadius: BorderRadius.circular(24), border: Border.all(color: AppColors.lightGrey.withOpacity(0.5))),
+      decoration: BoxDecoration(
+        color: AppColors.white, 
+        borderRadius: BorderRadius.circular(24), 
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 20)],
+        border: Border.all(color: AppColors.lightGrey.withOpacity(0.5))
+      ),
       child: Row(
         children: [
-          CircleAvatar(radius: 24, backgroundColor: AppColors.primary.withOpacity(0.1), child: Text(name[0], style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 18))),
+          CircleAvatar(radius: 24, backgroundColor: avatarColor.withOpacity(0.1), child: Text(name[0], style: TextStyle(color: avatarColor, fontWeight: FontWeight.bold, fontSize: 18))),
           const SizedBox(width: 20),
           Expanded(
             child: Column(
@@ -510,30 +525,74 @@ class _ApprovalCard extends StatelessWidget {
               children: [
                 Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.secondary, fontSize: 16)),
                 const SizedBox(height: 4),
-                Text("$type | $duration | $dates", style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey)),
-                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    _InfoChip(label: type, icon: Icons.category_outlined),
+                    const SizedBox(width: 12),
+                    _InfoChip(label: dates, icon: Icons.event_note),
+                  ],
+                ),
+                const SizedBox(height: 12),
                 Text("“$reason”", style: GoogleFonts.inter(fontSize: 13, color: AppColors.grey, fontStyle: FontStyle.italic)),
               ],
             ),
           ),
-          // Approval Buttons as Text Buttons
+          const SizedBox(width: 20),
           Row(
             children: [
-              TextButton(
-                onPressed: () {},
-                style: TextButton.styleFrom(foregroundColor: AppColors.success),
-                child: const Text("Approve", style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
+              _ActionButton(onPressed: () {}, icon: Icons.check, label: "Approve", color: AppColors.success),
               const SizedBox(width: 12),
-              TextButton(
-                onPressed: () {},
-                style: TextButton.styleFrom(foregroundColor: AppColors.error),
-                child: const Text("Reject", style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
+              _ActionButton(onPressed: () {}, icon: Icons.close, label: "Reject", color: AppColors.error),
             ],
           ),
         ],
       ),
+    );
+  }
+}
+
+class _InfoChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  const _InfoChip({required this.label, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(color: AppColors.lightGrey.withOpacity(0.3), borderRadius: BorderRadius.circular(8)),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: AppColors.grey),
+          const SizedBox(width: 6),
+          Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.grey, fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _ActionButton({required this.onPressed, required this.icon, required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color.withOpacity(0.1),
+        foregroundColor: color,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      icon: Icon(icon, size: 16),
+      label: Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold)),
     );
   }
 }
