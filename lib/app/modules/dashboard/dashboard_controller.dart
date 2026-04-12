@@ -18,6 +18,7 @@ class DashboardController extends GetxController {
 
   // For Leave Management Sub-sections
   final selectedLeaveSubSection = 0.obs; // 0: Apply Leave, 1: Leave Status/Approvals
+  final selectedLeaveDate = "".obs;
 
   // Dashboard Stats
   final onLeaveToday = 8.obs;
