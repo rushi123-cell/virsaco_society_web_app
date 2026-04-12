@@ -11,6 +11,7 @@ import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import 'dashboard_controller.dart';
 import '../profile/profile_view.dart';
+import '../profile/profile_binding.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
@@ -140,7 +141,7 @@ class _ProfileDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Get.to(() => const ProfileView());
+        Get.to(() => const ProfileView(), binding: ProfileBinding());
       },
       borderRadius: BorderRadius.circular(12),
       child: Container(
