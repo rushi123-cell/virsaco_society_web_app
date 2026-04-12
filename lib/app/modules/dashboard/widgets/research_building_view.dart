@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import '../dashboard_controller.dart';
+import 'stationary_view.dart';
 import '../dashboard_view.dart'; // To use _StatCard if we made it public or just redo it
 
 class ResearchBuildingView extends GetView<DashboardController> {
@@ -48,9 +49,31 @@ class ResearchBuildingView extends GetView<DashboardController> {
           const SizedBox(height: 32),
           Expanded(
             child: Obx(() {
-              return controller.selectedResearchSubSection.value == 0
-                  ? _buildStaffDetails(context)
-                  : _buildStoreRoom(context);
+              if (controller.selectedResearchSubSection.value == 0) {
+                return _buildStaffDetails(context);
+              } else {
+                if (controller.selectedStoreCategory.value == "Stationary") {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () => controller.changeStoreCategory(""),
+                            icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Back to Categories",
+                            style: GoogleFonts.inter(color: AppColors.primary, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const Expanded(child: StationaryView()),
+                    ],
+                  );
+                }
+                return _buildStoreRoom(context);
+              }
             }),
           ),
         ],
@@ -173,6 +196,55 @@ class ResearchBuildingView extends GetView<DashboardController> {
         fontWeight: FontWeight.bold,
         fontSize: 14,
       ),
+    );
+  }
+
+  Widget _buildStoreRoom(BuildContext context) {
+    final categories = [
+      {"name": "Stationary", "icon": Icons.edit_note, "color": Colors.blue},
+      {"name": "Glass Vessels", "icon": Icons.biotech, "color": Colors.teal},
+      {"name": "Chemicals", "icon": Icons.science, "color": Colors.orange},
+      {"name": "Plastic Vessels", "icon": Icons.opacity, "color": Colors.purple},
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Storage Inventory",
+          style: GoogleFonts.outfit(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.secondary,
+          ),
+        ),
+        const SizedBox(height: 24),
+        Expanded(
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: Responsive.isDesktop(context) ? 4 : 2,
+              crossAxisSpacing: 24,
+              mainAxisSpacing: 24,
+              childAspectRatio: 1.2,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  if (categories[index]["name"] == "Stationary") {
+                    controller.changeStoreCategory("Stationary");
+                  }
+                },
+                child: _CategoryCard(
+                  title: categories[index]["name"] as String,
+                  icon: categories[index]["icon"] as IconData,
+                  color: categories[index]["color"] as Color,
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -307,47 +379,6 @@ class _StaffCardState extends State<_StaffCard> {
   }
 }
 
-Widget _buildStoreRoom(BuildContext context) {
-  final categories = [
-    {"name": "Stationary", "icon": Icons.edit_note, "color": Colors.blue},
-    {"name": "Glass Vessels", "icon": Icons.biotech, "color": Colors.teal},
-    {"name": "Chemicals", "icon": Icons.science, "color": Colors.orange},
-    {"name": "Plastic Vessels", "icon": Icons.opacity, "color": Colors.purple},
-  ];
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        "Storage Inventory",
-        style: GoogleFonts.outfit(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: AppColors.secondary,
-        ),
-      ),
-      const SizedBox(height: 24),
-      Expanded(
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: Responsive.isDesktop(context) ? 4 : 2,
-            crossAxisSpacing: 24,
-            mainAxisSpacing: 24,
-            childAspectRatio: 1.2,
-          ),
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            return _CategoryCard(
-              title: categories[index]["name"] as String,
-              icon: categories[index]["icon"] as IconData,
-              color: categories[index]["color"] as Color,
-            );
-          },
-        ),
-      ),
-    ],
-  );
-}
 
 class _SubNavItem extends StatelessWidget {
   final String title;
