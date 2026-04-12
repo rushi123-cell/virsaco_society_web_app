@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/ground_management_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/home_dashboard_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/hostel_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/leave_management_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/research_building_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/side_menu.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
-import '../dashboard_controller.dart';
-import 'side_menu.dart';
-import 'research_building_view.dart';
-import 'hostel_view.dart';
-import 'ground_management_view.dart';
-import 'leave_management_view.dart';
-import 'home_dashboard_view.dart';
+import 'dashboard_controller.dart';
 import '../profile/profile_view.dart';
 
 class DashboardView extends GetView<DashboardController> {
