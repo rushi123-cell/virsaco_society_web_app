@@ -19,7 +19,7 @@ class HomeDashboardView extends GetView<DashboardController> {
           const SizedBox(height: 32),
           _buildQuickStats(context),
           const SizedBox(height: 48),
-          _buildOnLeaveSection(context),
+          Expanded(child: _buildOnLeaveSection(context)),
         ],
       ),
     );
@@ -68,6 +68,8 @@ class HomeDashboardView extends GetView<DashboardController> {
       children: [
         Row(
           children: [
+            const Icon(Icons.event_note, color: AppColors.primary, size: 24),
+            const SizedBox(width: 12),
             Text(
               "On Leave Today",
               style: GoogleFonts.outfit(
@@ -76,7 +78,7 @@ class HomeDashboardView extends GetView<DashboardController> {
                 color: AppColors.secondary,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
@@ -91,49 +93,102 @@ class HomeDashboardView extends GetView<DashboardController> {
           ],
         ),
         const SizedBox(height: 24),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: Responsive.isDesktop(context) ? 4 : (Responsive.isTablet(context) ? 2 : 1),
-            crossAxisSpacing: 24,
-            mainAxisSpacing: 24,
-            mainAxisExtent: 80,
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, 10)),
+              ],
+            ),
+            child: ListView.separated(
+              physics: const BouncingScrollPhysics(),
+              itemCount: 8,
+              separatorBuilder: (context, index) => const Divider(height: 32, color: AppColors.lightGrey),
+              itemBuilder: (context, index) {
+                return _LeaveListItem(
+                  name: "Staff Member ${index + 1}",
+                  role: index % 2 == 0 ? "Senior Researcher" : "Lab Assistant",
+                  leaveType: index % 3 == 0 ? "Sick Leave" : "Casual Leave",
+                  duration: "Full Day",
+                  reason: "Personal work at home.",
+                );
+              },
+            ),
           ),
-          itemCount: 8,
-          itemBuilder: (context, index) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.lightGrey.withOpacity(0.5)),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
-                ],
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundColor: AppColors.primary.withOpacity(0.1),
-                    child: Text("S${index + 1}", style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Staff Member ${index + 1}", style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.secondary, fontSize: 14)),
-                        Text("Researcher", style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+        ),
+      ],
+    );
+  }
+}
+
+class _LeaveListItem extends StatelessWidget {
+  final String name;
+  final String role;
+  final String leaveType;
+  final String duration;
+  final String reason;
+
+  const _LeaveListItem({
+    required this.name,
+    required this.role,
+    required this.leaveType,
+    required this.duration,
+    required this.reason,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 24,
+          backgroundColor: AppColors.primary.withOpacity(0.1),
+          child: Text(name[0], style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 18)),
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          flex: 3,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.secondary, fontSize: 16)),
+              Text(role, style: GoogleFonts.inter(fontSize: 13, color: AppColors.grey)),
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(leaveType, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.primary, fontSize: 14)),
+              Text(duration, style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey)),
+            ],
+          ),
+        ),
+        if (Responsive.isDesktop(context))
+          Expanded(
+            flex: 4,
+            child: Text(
+              "“$reason”",
+              style: GoogleFonts.inter(fontSize: 13, color: AppColors.grey, fontStyle: FontStyle.italic),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        const SizedBox(width: 20),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: AppColors.error.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Text(
+            "Away",
+            style: TextStyle(color: AppColors.error, fontSize: 12, fontWeight: FontWeight.bold),
+          ),
         ),
       ],
     );
