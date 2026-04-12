@@ -3,8 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'profile_controller.dart';
 import '../../../../common/values/app_colors.dart';
-import '../../../../common/widgets/custom_button.dart';
-import '../../../../common/widgets/custom_text_field.dart';
+import '../../../../common/utils/responsive.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -12,50 +11,33 @@ class ProfileView extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          // Background Gradient Header
-          Container(
-            height: 300,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.secondary, Color(0xFF00334E)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          // Custom Back Button
-          Positioned(
-            top: 40,
-            left: 20,
-            child: CircleAvatar(
-              backgroundColor: Colors.white.withOpacity(0.1),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ),
-          // Main Content
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+      backgroundColor: const Color(0xFFF4F7FA),
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          _buildAppBar(context),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
               child: Center(
                 child: Container(
-                  constraints: const BoxConstraints(maxWidth: 900),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      _buildMainProfileCard(),
-                      const SizedBox(height: 32),
-                      _buildDetailsGrid(context),
-                    ],
-                  ),
+                  constraints: const BoxConstraints(maxWidth: 1200),
+                  child: Responsive.isDesktop(context) 
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(flex: 2, child: _buildStatsCard(context)),
+                            const SizedBox(width: 32),
+                            Expanded(flex: 3, child: _buildInfoEditor(context)),
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            _buildStatsCard(context),
+                            const SizedBox(height: 32),
+                            _buildInfoEditor(context),
+                          ],
+                        ),
                 ),
               ),
             ),
@@ -65,152 +47,36 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildMainProfileCard() {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isMobile = constraints.maxWidth < 600;
-        return Container(
-          padding: EdgeInsets.all(isMobile ? 24 : 40),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.secondary.withOpacity(0.1),
-                blurRadius: 30,
-                offset: const Offset(0, 15),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Flex(
-                direction: isMobile ? Axis.vertical : Axis.horizontal,
-                crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-                children: [
-                  // Animated Profile Picture
-                  Stack(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: AppColors.primaryGradient,
-                        ),
-                        child: CircleAvatar(
-                          radius: isMobile ? 50 : 60,
-                          backgroundColor: Colors.white,
-                          child: CircleAvatar(
-                            radius: isMobile ? 46 : 56,
-                            backgroundColor: AppColors.primary,
-                            child: Icon(Icons.person, size: isMobile ? 50 : 60, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 5,
-                        right: 5,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: const BoxDecoration(
-                            color: AppColors.secondary,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.camera_alt, size: 20, color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: isMobile ? 0 : 32, height: isMobile ? 24 : 0),
-                  Expanded(
-                    flex: isMobile ? 0 : 1,
-                    child: Column(
-                      crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 10),
-                        Flex(
-                          direction: isMobile ? Axis.vertical : Axis.horizontal,
-                          mainAxisAlignment: isMobile ? MainAxisAlignment.center : MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.center,
-                          children: [
-                            Column(
-                              crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Admin User",
-                                  textAlign: isMobile ? TextAlign.center : TextAlign.start,
-                                  style: GoogleFonts.outfit(
-                                    fontSize: isMobile ? 26 : 32,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.secondary,
-                                  ),
-                                ),
-                                Text(
-                                  "Super Administrator",
-                                  textAlign: isMobile ? TextAlign.center : TextAlign.start,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 16,
-                                    color: AppColors.grey,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (isMobile) const SizedBox(height: 16),
-                            if (!isMobile) const Spacer(),
-                            Obx(() => _buildEditToggle()),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Wrap(
-                          alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
-                          spacing: 12,
-                          runSpacing: 12,
-                          children: [
-                            _buildBadge("Active", AppColors.success),
-                            _buildBadge("Verified", AppColors.primary),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      }
-    );
-  }
-
-  Widget _buildEditToggle() {
-    final isEditing = controller.isEditing.value;
-    return GestureDetector(
-      onTap: controller.toggleEdit,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        decoration: BoxDecoration(
-          color: isEditing ? AppColors.error.withOpacity(0.1) : AppColors.primary.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: isEditing ? AppColors.error.withOpacity(0.3) : AppColors.primary.withOpacity(0.3),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+  Widget _buildAppBar(BuildContext context) {
+    return SliverAppBar(
+      expandedHeight: 200,
+      pinned: true,
+      backgroundColor: AppColors.secondary,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => Get.back(),
+      ),
+      flexibleSpace: FlexibleSpaceBar(
+        background: Stack(
+          fit: StackFit.expand,
           children: [
-            Icon(
-              isEditing ? Icons.close : Icons.edit_outlined,
-              size: 18,
-              color: isEditing ? AppColors.error : AppColors.primary,
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.secondary, Color(0xFF00334E)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
             ),
-            const SizedBox(width: 8),
-            Text(
-              isEditing ? "Cancel" : "Edit Profile",
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.bold,
-                color: isEditing ? AppColors.error : AppColors.primary,
+            // Decorative elements
+            Positioned(
+              right: -50,
+              top: -50,
+              child: CircleAvatar(
+                radius: 100,
+                backgroundColor: Colors.white.withOpacity(0.05),
               ),
             ),
           ],
@@ -219,169 +85,196 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildBadge(String text, Color color) {
+  Widget _buildStatsCard(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 40, offset: const Offset(0, 10)),
+        ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
         children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          Stack(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary,
+                ),
+                child: const CircleAvatar(
+                  radius: 70,
+                  backgroundColor: Colors.white,
+                  child: CircleAvatar(
+                    radius: 66,
+                    backgroundColor: AppColors.lightGrey,
+                    child: Icon(Icons.person, size: 70, color: AppColors.secondary),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 5,
+                right: 5,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 3),
+                  ),
+                  child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
+          const SizedBox(height: 32),
           Text(
-            text,
-            style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.bold),
+            "Rushita Ramani",
+            style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.secondary),
           ),
+          Text(
+            "Super Administrator",
+            style: GoogleFonts.inter(fontSize: 14, color: AppColors.grey, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 48),
+          _buildQuickStat(Icons.event_available, "Total Days Active", "342 Days"),
+          const Divider(height: 40),
+          _buildQuickStat(Icons.task_alt, "Applications Processed", "1,240"),
+          const Divider(height: 40),
+          _buildQuickStat(Icons.workspace_premium, "Society Rank", "Head Admin"),
         ],
       ),
     );
   }
 
-  Widget _buildDetailsGrid(BuildContext context) {
-    return Column(
+  Widget _buildQuickStat(IconData icon, String label, String value) {
+    return Row(
       children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final isWide = constraints.maxWidth > 600;
-            return Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: _InfoSection(
-                        title: "Personal info",
-                        children: [
-                          _buildModernField(
-                            controller: controller.nameController,
-                            label: "Full Name",
-                            icon: Icons.person_outline,
-                          ),
-                          const SizedBox(height: 24),
-                          _buildModernField(
-                            controller: controller.emailController,
-                            label: "Email Address",
-                            icon: Icons.alternate_email,
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (isWide) const SizedBox(width: 32),
-                    if (isWide)
-                      Expanded(
-                        child: _InfoSection(
-                          title: "Work info",
-                          children: [
-                            _buildModernField(
-                              controller: controller.roleController,
-                              label: "User Role",
-                              icon: Icons.work_outline,
-                            ),
-                            const SizedBox(height: 24),
-                            _buildModernField(
-                              controller: controller.phoneController,
-                              label: "Phone Number",
-                              icon: Icons.phone_outlined,
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-                if (!isWide) const SizedBox(height: 32),
-                if (!isWide)
-                  _InfoSection(
-                    title: "Work info",
-                    children: [
-                      _buildModernField(
-                        controller: controller.roleController,
-                        label: "User Role",
-                        icon: Icons.work_outline,
-                      ),
-                      const SizedBox(height: 24),
-                      _buildModernField(
-                        controller: controller.phoneController,
-                        label: "Phone Number",
-                        icon: Icons.phone_outlined,
-                      ),
-                    ],
-                  ),
-              ],
-            );
-          },
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+          child: Icon(icon, color: AppColors.primary, size: 20),
         ),
-        const SizedBox(height: 48),
-        Obx(() => controller.isEditing.value
-            ? SizedBox(
-                width: 300,
-                child: CustomButton(
-                  text: "Save Changes",
-                  isLoading: controller.isLoading.value,
-                  onPressed: controller.saveProfile,
-                ),
-              )
-            : const SizedBox()),
+        const SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey)),
+            Text(value, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.secondary)),
+          ],
+        ),
       ],
     );
   }
 
-  Widget _buildModernField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-  }) {
+  Widget _buildInfoEditor(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(48),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 40, offset: const Offset(0, 10)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Account Information", style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.secondary)),
+              Obx(() => TextButton.icon(
+                onPressed: controller.toggleEdit,
+                icon: Icon(controller.isEditing.value ? Icons.close : Icons.edit, size: 18),
+                label: Text(controller.isEditing.value ? "Cancel" : "Edit Profile"),
+                style: TextButton.styleFrom(
+                  foregroundColor: controller.isEditing.value ? AppColors.error : AppColors.primary,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
+              )),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text("Manage your personal details and contact information", style: GoogleFonts.inter(fontSize: 14, color: AppColors.grey)),
+          const SizedBox(height: 48),
+          _buildFieldRow(
+            [
+              _buildModernField("Full Name", controller.nameController, Icons.person_outline),
+              _buildModernField("Email Address", controller.emailController, Icons.email_outlined),
+            ],
+            context,
+          ),
+          const SizedBox(height: 32),
+          _buildFieldRow(
+            [
+              _buildModernField("Phone Number", controller.phoneController, Icons.phone_android_outlined),
+              _buildModernField("User Role", controller.roleController, Icons.work_outline),
+            ],
+            context,
+          ),
+          const SizedBox(height: 48),
+          Obx(() => controller.isEditing.value 
+              ? SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: controller.saveProfile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      elevation: 0,
+                    ),
+                    child: controller.isLoading.value 
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : Text("Save All Changes", style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                  ),
+                )
+              : const SizedBox()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFieldRow(List<Widget> fields, BuildContext context) {
+    if (Responsive.isMobile(context)) {
+      return Column(children: fields.map((f) => Padding(padding: const EdgeInsets.only(bottom: 24), child: f)).toList());
+    }
+    return Row(
+      children: fields.map((f) => Expanded(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 8), child: f))).toList(),
+    );
+  }
+
+  Widget _buildModernField(String label, TextEditingController textController, IconData icon) {
     return Obx(() {
-      final isEditing = this.controller.isEditing.value;
+      final editing = controller.isEditing.value;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: AppColors.grey,
-            ),
-          ),
-          const SizedBox(height: 12),
+          Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.grey)),
+          const SizedBox(height: 10),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: isEditing ? Colors.white : AppColors.lightGrey.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                color: isEditing ? AppColors.primary.withOpacity(0.3) : Colors.transparent,
-              ),
-              boxShadow: isEditing 
-                  ? [BoxShadow(color: AppColors.primary.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))] 
-                  : [],
+              color: editing ? Colors.white : AppColors.lightGrey.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: editing ? AppColors.primary : Colors.transparent, width: 1.5),
             ),
             child: Row(
               children: [
-                Icon(icon, color: isEditing ? AppColors.primary : AppColors.grey, size: 20),
-                const SizedBox(width: 16),
+                Icon(icon, color: editing ? AppColors.primary : AppColors.grey, size: 20),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: isEditing
+                  child: editing 
                       ? TextField(
-                          controller: controller,
-                          style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.secondary),
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
-                          ),
+                          controller: textController,
+                          style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.secondary),
+                          decoration: const InputDecoration(isDense: true, border: InputBorder.none, contentPadding: EdgeInsets.zero),
                         )
-                      : Text(
-                          controller.text,
-                          style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.secondary),
-                        ),
+                      : Text(textController.text, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.secondary)),
                 ),
               ],
             ),
@@ -389,45 +282,5 @@ class ProfileView extends GetView<ProfileController> {
         ],
       );
     });
-  }
-}
-
-class _InfoSection extends StatelessWidget {
-  final String title;
-  final List<Widget> children;
-
-  const _InfoSection({required this.title, required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.outfit(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppColors.secondary,
-            ),
-          ),
-          const SizedBox(height: 32),
-          ...children,
-        ],
-      ),
-    );
   }
 }

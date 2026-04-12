@@ -6,8 +6,8 @@ class ProfileController extends GetxController {
   final isLoading = false.obs;
 
   // Form Controllers
-  final nameController = TextEditingController(text: 'Admin User');
-  final emailController = TextEditingController(text: 'admin@virsaco.com');
+  final nameController = TextEditingController(text: 'Rushita Ramani');
+  final emailController = TextEditingController(text: 'rushita.admin@virsaco.com');
   final phoneController = TextEditingController(text: '+91 98765 43210');
   final roleController = TextEditingController(text: 'Administrator');
 
