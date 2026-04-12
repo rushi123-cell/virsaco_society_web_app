@@ -15,175 +15,167 @@ class HomeDashboardView extends GetView<DashboardController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.dashboard_outlined, color: AppColors.primary, size: 32),
-              const SizedBox(width: 16),
-              Text(
-                "Dashboard Overview",
-                style: GoogleFonts.outfit(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.secondary,
-                ),
-              ),
-            ],
-          ),
+          _buildWelcomeHeader(context),
           const SizedBox(height: 32),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildQuickStats(context),
-                  const SizedBox(height: 48),
-                  _buildTodayLeaveSection(context),
-                ],
-              ),
-            ),
-          ),
+          _buildQuickStats(context),
+          const SizedBox(height: 48),
+          _buildOnLeaveSection(context),
         ],
       ),
     );
   }
 
-  Widget _buildQuickStats(BuildContext context) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: Responsive.isDesktop(context) ? 4 : (Responsive.isTablet(context) ? 2 : 1),
-      crossAxisSpacing: 24,
-      mainAxisSpacing: 24,
-      childAspectRatio: 1.5,
+  Widget _buildWelcomeHeader(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _StatCard(title: "Total Staff", value: "124", icon: Icons.people_outline, color: Colors.blue),
-        Obx(() => _StatCard(
-          title: "On Leave Today",
-          value: controller.onLeaveToday.value.toString(),
-          icon: Icons.calendar_today_outlined,
-          color: AppColors.error,
-        )),
-        _StatCard(title: "Present Today", value: "116", icon: Icons.check_circle_outline, color: AppColors.success),
-        _StatCard(title: "Pending Tasks", value: "12", icon: Icons.assignment_outlined, color: Colors.orange),
+        Text(
+          "Society Dashboard",
+          style: GoogleFonts.outfit(
+            fontSize: Responsive.isMobile(context) ? 24 : 32,
+            fontWeight: FontWeight.bold,
+            color: AppColors.secondary,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          "Welcome back! Here's a quick overview of today's activities.",
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            color: AppColors.grey,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildTodayLeaveSection(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 20)],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                "On Leave Today",
-                style: GoogleFonts.outfit(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.secondary,
-                ),
+  Widget _buildQuickStats(BuildContext context) {
+    return Wrap(
+      spacing: 24,
+      runSpacing: 24,
+      children: [
+        _StatCard(title: "Total Staff", count: "48", icon: Icons.people_outline, color: Colors.blue),
+        _StatCard(title: "Present Today", count: "32", icon: Icons.how_to_reg_outlined, color: Colors.teal),
+        _StatCard(title: "On Leave", count: "08", icon: Icons.event_busy_outlined, color: Colors.orange),
+        _StatCard(title: "Pending Tasks", count: "14", icon: Icons.assignment_late_outlined, color: Colors.purple),
+      ],
+    );
+  }
+
+  Widget _buildOnLeaveSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              "On Leave Today",
+              style: GoogleFonts.outfit(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: AppColors.secondary,
               ),
-              const Spacer(),
-              TextButton(
-                onPressed: () => controller.changeIndex(5), // Go to Leave Management
-                child: Row(
-                  children: [
-                    Text("Manage Leaves", style: GoogleFonts.inter(color: AppColors.primary, fontWeight: FontWeight.w600)),
-                    const Icon(Icons.arrow_forward_rounded, size: 16, color: AppColors.primary),
-                  ],
-                ),
+            ),
+            const SizedBox(width: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.error.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
               ),
-            ],
+              child: Obx(() => Text(
+                "${controller.onLeaveToday.value} Members",
+                style: const TextStyle(color: AppColors.error, fontSize: 12, fontWeight: FontWeight.bold),
+              )),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: Responsive.isDesktop(context) ? 4 : (Responsive.isTablet(context) ? 2 : 1),
+            crossAxisSpacing: 24,
+            mainAxisSpacing: 24,
+            mainAxisExtent: 80,
           ),
-          const SizedBox(height: 24),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: 4,
-            separatorBuilder: (context, index) => Divider(color: AppColors.lightGrey.withOpacity(0.5)),
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundColor: AppColors.primary.withOpacity(0.1),
-                      child: Text("${index + 1}", style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.bold)),
+          itemCount: 8,
+          itemBuilder: (context, index) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.lightGrey.withOpacity(0.5)),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
+                ],
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    child: Text("S${index + 1}", style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Staff Member ${index + 1}", style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.secondary, fontSize: 14)),
+                        Text("Researcher", style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey)),
+                      ],
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Staff Member ${index + 101}", style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.secondary)),
-                          Text(index % 2 == 0 ? "Full Day" : "Half Day (Morning)", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 12)),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: (index % 3 == 0 ? Colors.orange : Colors.blue).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        index % 3 == 0 ? "Sick Leave" : "Casual Leave",
-                        style: TextStyle(
-                          color: index % 3 == 0 ? Colors.orange : Colors.blue,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
 
 class _StatCard extends StatelessWidget {
   final String title;
-  final String value;
+  final String count;
   final IconData icon;
   final Color color;
 
-  const _StatCard({required this.title, required this.value, required this.icon, required this.color});
+  const _StatCard({required this.title, required this.count, required this.icon, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 250,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 4)),
+        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, color: color, size: 28),
+          ),
+          const SizedBox(width: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: GoogleFonts.inter(color: AppColors.grey, fontWeight: FontWeight.w500)),
-              Icon(icon, color: color, size: 24),
+              Text(title, style: GoogleFonts.inter(fontSize: 14, color: AppColors.grey, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 4),
+              Text(count, style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.secondary)),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(value, style: GoogleFonts.outfit(fontSize: 32, fontWeight: FontWeight.bold, color: AppColors.secondary)),
         ],
       ),
     );

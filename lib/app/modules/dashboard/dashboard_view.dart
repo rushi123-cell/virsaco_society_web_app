@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../common/utils/responsive.dart';
-import '../../../common/values/app_colors.dart';
-import '../../routes/app_pages.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/ground_management_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/home_dashboard_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/hostel_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/leave_management_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/research_building_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/side_menu.dart';
+import '../../../../common/values/app_colors.dart';
+import '../../../../common/utils/responsive.dart';
 import 'dashboard_controller.dart';
-import 'widgets/side_menu.dart';
-import 'widgets/research_building_view.dart';
-import 'widgets/hostel_view.dart';
-import 'widgets/ground_management_view.dart';
-import 'widgets/leave_management_view.dart';
-import 'widgets/home_dashboard_view.dart';
 import '../profile/profile_view.dart';
-import '../profile/profile_binding.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
@@ -20,20 +18,22 @@ class DashboardView extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: GlobalKey<ScaffoldState>(),
       drawer: const SideMenu(),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // We want this side menu only for large screens
+            // Side Menu (Only for Desktop)
             if (Responsive.isDesktop(context))
               const Expanded(
-                // default flex = 1
-                // and it takes 1/6 part of the screen
+                flex: 1,
                 child: SideMenu(),
               ),
+            
+            // Main Content Area
             Expanded(
-              // It takes 5/6 part of the screen
               flex: 5,
               child: Column(
                 children: [
@@ -67,188 +67,112 @@ class DashboardView extends GetView<DashboardController> {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
-      color: AppColors.white,
-      child: Builder(
-        builder: (scaffoldContext) => Row(
-          children: [
-            if (!Responsive.isDesktop(context))
-              IconButton(
-                icon: const Icon(Icons.menu, color: AppColors.secondary),
-                onPressed: () => Scaffold.of(scaffoldContext).openDrawer(),
-              ),
-            if (!Responsive.isDesktop(context)) const SizedBox(width: 16),
-            const Icon(Icons.dashboard_outlined, color: AppColors.primary, size: 28),
-            const SizedBox(width: 12),
-            Text(
-              "Dashboard",
-              style: GoogleFonts.outfit(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.secondary,
-              ),
-            ),
-            const Spacer(),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  Get.toNamed(Routes.PROFILE);
-                },
-                mouseCursor: SystemMouseCursors.click,
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 16,
-                        backgroundColor: AppColors.primary,
-                        child: Icon(Icons.person, size: 20, color: Colors.white),
-                      ),
-                      const SizedBox(width: 16),
-                      Text(
-                        "Admin User",
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.secondary,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Icon(Icons.keyboard_arrow_down, size: 20, color: AppColors.secondary),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContent(BuildContext context, String title, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      color: AppColors.background,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+      color: Colors.white,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(icon, color: AppColors.primary, size: 32),
-              const SizedBox(width: 16),
-              Text(
-                title,
-                style: GoogleFonts.outfit(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.secondary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          Expanded(
-            child: GridView.builder(
-              itemCount: 4, // Placeholder items
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: Responsive.isDesktop(context) ? 4 : (Responsive.isTablet(context) ? 2 : 1),
-                crossAxisSpacing: 24,
-                mainAxisSpacing: 24,
-                childAspectRatio: 1.5,
-              ),
-              itemBuilder: (context, index) => _StatCard(
-                title: "Metric ${index + 1}",
-                val: "${(index + 1) * 25}%",
-                icon: index % 2 == 0 ? Icons.trending_up : Icons.trending_down,
-                color: index % 2 == 0 ? AppColors.success : AppColors.error,
-              ),
+          if (!Responsive.isDesktop(context))
+            IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            ),
+          
+          Text(
+            "Society Management System",
+            style: GoogleFonts.outfit(
+              fontSize: Responsive.isMobile(context) ? 18 : 22,
+              fontWeight: FontWeight.bold,
+              color: AppColors.secondary,
             ),
           ),
+          
+          const Spacer(),
+          
+          _HeaderActionIcon(icon: Icons.notifications_none_outlined, count: "5"),
+          const SizedBox(width: 20),
+          _ProfileDropdown(),
         ],
       ),
     );
   }
 }
 
-class _StatCard extends StatefulWidget {
-  final String title;
-  final String val;
+class _HeaderActionIcon extends StatelessWidget {
   final IconData icon;
-  final Color color;
+  final String count;
 
-  const _StatCard({
-    required this.title,
-    required this.val,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  State<_StatCard> createState() => _StatCardState();
-}
-
-class _StatCardState extends State<_StatCard> {
-  bool _isHovered = false;
+  const _HeaderActionIcon({required this.icon, required this.count});
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInOut,
-        transform: Matrix4.identity()..scale(_isHovered ? 1.03 : 1.0),
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: widget.color.withOpacity(_isHovered ? 0.15 : 0.04),
-              blurRadius: _isHovered ? 20 : 10,
-              offset: Offset(0, _isHovered ? 8 : 4),
-            ),
-          ],
+    return Stack(
+      children: [
+        IconButton(
+          onPressed: () {},
+          icon: Icon(icon, color: AppColors.grey, size: 26),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Positioned(
+          right: 8,
+          top: 8,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: const BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+            constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+            child: Text(
+              count,
+              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ProfileDropdown extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Get.to(() => const ProfileView());
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.lightGrey),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.title,
-                  style: GoogleFonts.inter(
-                    color: AppColors.grey,
-                    fontWeight: FontWeight.w500,
+            const CircleAvatar(
+              radius: 16,
+              backgroundColor: AppColors.primary,
+              child: Icon(Icons.person, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            if (!Responsive.isMobile(context))
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Rushita Ramani",
+                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.secondary),
                   ),
-                ),
-                Icon(widget.icon, color: widget.color, size: 24),
-              ],
-            ),
-            Text(
-              widget.val,
-              style: GoogleFonts.outfit(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: AppColors.secondary,
+                  Text(
+                    "Administrator",
+                    style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            LinearProgressIndicator(
-              value: 0.7,
-              backgroundColor: AppColors.lightGrey,
-              valueColor: AlwaysStoppedAnimation<Color>(widget.color),
-              borderRadius: BorderRadius.circular(4),
-            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.keyboard_arrow_down, color: AppColors.grey),
           ],
         ),
       ),
