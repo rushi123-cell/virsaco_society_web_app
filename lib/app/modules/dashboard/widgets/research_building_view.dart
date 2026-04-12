@@ -96,13 +96,11 @@ class ResearchBuildingView extends GetView<DashboardController> {
             children: [
               _SubNavItem(
                 title: "Staff Details",
-                index: 0,
                 isSelected: controller.selectedResearchSubSection.value == 0,
                 onTap: () => controller.changeResearchSubSection(0),
               ),
               _SubNavItem(
                 title: "Store Room",
-                index: 1,
                 isSelected: controller.selectedResearchSubSection.value == 1,
                 onTap: () => controller.changeResearchSubSection(1),
               ),
@@ -379,16 +377,13 @@ class _StaffCardState extends State<_StaffCard> {
   }
 }
 
-
 class _SubNavItem extends StatelessWidget {
   final String title;
-  final int index;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _SubNavItem({
     required this.title,
-    required this.index,
     required this.isSelected,
     required this.onTap,
   });

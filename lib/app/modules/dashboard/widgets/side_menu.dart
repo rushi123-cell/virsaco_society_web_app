@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../common/values/app_colors.dart';
-import '../../../routes/app_pages.dart';
 import '../dashboard_controller.dart';
-import '../../profile/profile_view.dart';
-import '../../profile/profile_binding.dart';
 
 class SideMenu extends GetView<DashboardController> {
   const SideMenu({super.key});
@@ -13,27 +10,12 @@ class SideMenu extends GetView<DashboardController> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      elevation: 0,
       backgroundColor: AppColors.secondary,
       child: Column(
         children: [
-          DrawerHeader(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.science_outlined, size: 48, color: AppColors.primary),
-                const SizedBox(height: 12),
-                Text(
-                  'VIRSACO',
-                  style: GoogleFonts.outfit(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildLogo(),
+          const SizedBox(height: 20),
           _DrawerListTile(
             title: "Dashboard",
             icon: Icons.dashboard_outlined,
@@ -72,25 +54,51 @@ class SideMenu extends GetView<DashboardController> {
             press: () {},
           ),
           _DrawerListTile(
-            title: "Profile",
-            icon: Icons.person_outline,
-            index: 10,
-            press: () => Get.toNamed(Routes.PROFILE),
-          ),
-          _DrawerListTile(
             title: "Logout",
             icon: Icons.logout,
             index: -1,
-            press: controller.logout,
+            press: () => controller.logout(),
           ),
           const SizedBox(height: 20),
         ],
       ),
     );
   }
+
+  Widget _buildLogo() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.domain,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 15),
+          Text(
+            "Virsaco",
+            style: GoogleFonts.outfit(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _DrawerListTile extends GetView<DashboardController> {
+class _DrawerListTile extends StatelessWidget {
   const _DrawerListTile({
     required this.title,
     required this.icon,
@@ -105,38 +113,36 @@ class _DrawerListTile extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
+    final DashboardController controller = Get.find();
+
     return Obx(() {
       final isSelected = controller.selectedIndex.value == index;
-      return ListTile(
-        onTap: press,
-        horizontalTitleGap: 0.0,
-        selected: isSelected,
-        leading: Icon(
-          icon,
-          color: isSelected ? AppColors.primary : Colors.white54,
-          size: 22,
-        ),
-        title: Row(
-          children: [
-            const SizedBox(width: 8), // Gap between icon and text
-            Expanded(
-              child: Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.inter(
-                  color: isSelected ? Colors.white : Colors.white54,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-            ),
-          ],
-        ),
-        tileColor: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
-        shape: RoundedRectangleBorder(
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
+          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+        child: ListTile(
+          onTap: press,
+          horizontalTitleGap: 0.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          leading: Icon(
+            icon,
+            color: isSelected ? AppColors.primary : Colors.white54,
+            size: 20,
+          ),
+          title: Text(
+            title,
+            style: GoogleFonts.inter(
+              color: isSelected ? AppColors.primary : Colors.white54,
+              fontSize: 14,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
       );
     });
   }

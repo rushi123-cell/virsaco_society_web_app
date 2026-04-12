@@ -31,7 +31,7 @@ class DashboardController extends GetxController {
     }
     if (index != 2) selectedHostelSubSection.value = 0;
     if (index != 3) selectedGroundSubSection.value = 0;
-    if (index != 4) selectedLeaveSubSection.value = 0;
+    if (index != 5) selectedLeaveSubSection.value = 0;
   }
 
   void changeResearchSubSection(int index) {
