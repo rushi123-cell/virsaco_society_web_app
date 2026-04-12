@@ -8,6 +8,9 @@ import 'dashboard_controller.dart';
 import 'widgets/side_menu.dart';
 import 'widgets/research_building_view.dart';
 import 'widgets/hostel_view.dart';
+import 'widgets/ground_management_view.dart';
+import 'widgets/leave_management_view.dart';
+import 'widgets/home_dashboard_view.dart';
 import '../profile/profile_view.dart';
 import '../profile/profile_binding.dart';
 
@@ -39,13 +42,17 @@ class DashboardView extends GetView<DashboardController> {
                     child: Obx(() {
                       switch (controller.selectedIndex.value) {
                         case 0:
-                          return const ResearchBuildingView();
+                          return const HomeDashboardView();
                         case 1:
-                          return const HostelView();
+                          return const ResearchBuildingView();
                         case 2:
-                          return _buildContent(context, "Ground Management", Icons.landscape_outlined);
+                          return const HostelView();
+                        case 3:
+                          return const GroundManagementView();
+                        case 4:
+                          return const LeaveManagementView();
                         default:
-                          return _buildContent(context, "Dashboard", Icons.dashboard_outlined);
+                          return const HomeDashboardView();
                       }
                     }),
                   ),
