@@ -11,7 +11,7 @@ class ProfileView extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7FA),
+      backgroundColor: AppColors.profileBackground,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -64,7 +64,7 @@ class ProfileView extends GetView<ProfileController> {
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.secondary, Color(0xFF00334E)],
+                  colors: [AppColors.secondary, AppColors.profileGradientEnd],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -144,7 +144,7 @@ class ProfileView extends GetView<ProfileController> {
           const Divider(height: 40),
           _buildQuickStat(Icons.task_alt, "Applications Processed", "1,240"),
           const Divider(height: 40),
-          _buildQuickStat(Icons.workspace_premium, "Society Rank", "Head Admin"),
+          _buildQuickStat(Icons.workspace_premium, "VIRSACO Rank", "Head Admin"),
         ],
       ),
     );

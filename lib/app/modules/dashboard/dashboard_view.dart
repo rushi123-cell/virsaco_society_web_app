@@ -7,6 +7,7 @@ import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/hostel_vie
 import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/leave_management_view.dart';
 import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/research_building_view.dart';
 import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/side_menu.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/employee_management_view.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import 'dashboard_controller.dart';
@@ -52,6 +53,8 @@ class DashboardView extends GetView<DashboardController> {
                           return const GroundManagementView();
                         case 4:
                           return const LeaveManagementView();
+                        case 6:
+                          return const EmployeeManagementView();
                         default:
                           return const HomeDashboardView();
                       }

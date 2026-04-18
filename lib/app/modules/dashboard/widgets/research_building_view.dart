@@ -5,7 +5,10 @@ import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import '../dashboard_controller.dart';
 import 'stationary_view.dart';
-import '../dashboard_view.dart'; // To use _StatCard if we made it public or just redo it
+import 'chemicals_view.dart';
+import 'vessels_view.dart';
+import '../dashboard_view.dart';
+import '../../../../common/widgets/custom_pagination.dart';
 
 class ResearchBuildingView extends GetView<DashboardController> {
   const ResearchBuildingView({super.key});
@@ -52,7 +55,30 @@ class ResearchBuildingView extends GetView<DashboardController> {
               if (controller.selectedResearchSubSection.value == 0) {
                 return _buildStaffDetails(context);
               } else {
-                if (controller.selectedStoreCategory.value == "Stationary") {
+                  Widget currentView;
+                  String title;
+                  
+                  switch (controller.selectedStoreCategory.value) {
+                    case "Stationary":
+                      currentView = const StationaryView();
+                      title = "Stationary";
+                      break;
+                    case "Glass Vessels":
+                      currentView = const VesselsView(vesselType: "Glass", icon: Icons.biotech);
+                      title = "Glass Vessels";
+                      break;
+                    case "Chemicals":
+                      currentView = const ChemicalsView();
+                      title = "Chemicals";
+                      break;
+                    case "Plastic Vessels":
+                      currentView = const VesselsView(vesselType: "Plastic", icon: Icons.opacity);
+                      title = "Plastic Vessels";
+                      break;
+                    default:
+                      return _buildStoreRoom(context);
+                  }
+
                   return Column(
                     children: [
                       Row(
@@ -68,12 +94,11 @@ class ResearchBuildingView extends GetView<DashboardController> {
                           ),
                         ],
                       ),
-                      const Expanded(child: StationaryView()),
+                      Expanded(child: currentView),
                     ],
                   );
                 }
                 return _buildStoreRoom(context);
-              }
             }),
           ),
         ],
@@ -96,11 +121,13 @@ class ResearchBuildingView extends GetView<DashboardController> {
             children: [
               _SubNavItem(
                 title: "Staff Details",
+                icon: Icons.person_search,
                 isSelected: controller.selectedResearchSubSection.value == 0,
                 onTap: () => controller.changeResearchSubSection(0),
               ),
               _SubNavItem(
                 title: "Store Room",
+                icon: Icons.inventory,
                 isSelected: controller.selectedResearchSubSection.value == 1,
                 onTap: () => controller.changeResearchSubSection(1),
               ),
@@ -126,60 +153,60 @@ class ResearchBuildingView extends GetView<DashboardController> {
         const SizedBox(height: 20,),
         // Header & Data Section with Horizontal Scroll
         Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 900),
-              child: SizedBox(
-                width:
-                    MediaQuery.of(context).size.width -
-                    (Responsive.isDesktop(context) ? 300 : 80),
-                child: Column(
-                  children: [
-                    // Header Row
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondary,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 900),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 300 : 80),
+                      child: Column(
                         children: [
-                          Expanded(flex: 2, child: _headerText("Name")),
-                          Expanded(flex: 2, child: _headerText("Position")),
-                          Expanded(flex: 2, child: _headerText("Joined Date")),
-                          Expanded(flex: 1, child: _headerText("Leaves")),
-                          Expanded(flex: 1, child: _headerText("Status")),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                            decoration: BoxDecoration(
+                              color: AppColors.secondary,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(flex: 2, child: _headerText("Name")),
+                                Expanded(flex: 2, child: _headerText("Position")),
+                                Expanded(flex: 2, child: _headerText("Joined Date")),
+                                Expanded(flex: 1, child: _headerText("Leaves")),
+                                Expanded(flex: 1, child: _headerText("Status")),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Expanded(
+                            child: ListView.separated(
+                              itemCount: 8,
+                              separatorBuilder: (context, index) => const SizedBox(height: 8),
+                              itemBuilder: (context, index) {
+                                return _StaffCard(
+                                  name: "Staff Member ${index + 1}",
+                                  post: index % 2 == 0 ? "Senior Researcher" : "Lab Assistant",
+                                  date: "Jan 12, 2023",
+                                  leaves: "${index * 2}",
+                                  isVerified: index % 3 != 0,
+                                );
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    // Data Rows
-                    Expanded(
-                      child: ListView.separated(
-                        itemCount: 8,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 8),
-                        itemBuilder: (context, index) {
-                          return _StaffCard(
-                            name: "Staff Member ${index + 1}",
-                            post: index % 2 == 0
-                                ? "Senior Researcher"
-                                : "Lab Assistant",
-                            date: "Jan 12, 2023",
-                            leaves: "${index * 2}",
-                            isVerified: index % 3 != 0,
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: CustomPagination(currentPage: controller.researchStaffPage),
+              ),
+            ],
           ),
         ),
       ],
@@ -229,9 +256,7 @@ class ResearchBuildingView extends GetView<DashboardController> {
             itemBuilder: (context, index) {
               return GestureDetector(
                 onTap: () {
-                  if (categories[index]["name"] == "Stationary") {
-                    controller.changeStoreCategory("Stationary");
-                  }
+                  controller.changeStoreCategory(categories[index]["name"] as String);
                 },
                 child: _CategoryCard(
                   title: categories[index]["name"] as String,
@@ -379,11 +404,13 @@ class _StaffCardState extends State<_StaffCard> {
 
 class _SubNavItem extends StatelessWidget {
   final String title;
+  final IconData icon;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _SubNavItem({
     required this.title,
+    required this.icon,
     required this.isSelected,
     required this.onTap,
   });
@@ -394,20 +421,31 @@ class _SubNavItem extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           boxShadow: isSelected
-              ? [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)]
+              ? [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))]
               : [],
         ),
-        child: Text(
-          title,
-          style: GoogleFonts.inter(
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: isSelected ? AppColors.primary : AppColors.grey,
-          ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected ? AppColors.primary : AppColors.grey,
+            ),
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected ? AppColors.primary : AppColors.grey,
+              ),
+            ),
+          ],
         ),
       ),
     );

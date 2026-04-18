@@ -14,6 +14,10 @@ class AppColors {
   static const Color success = Color(0xFF43A047);
   static const Color warning = Color(0xFFFB8C00);
 
+  // Profile Specific Colors
+  static const Color profileBackground = Color(0xFFF4F7FA);
+  static const Color profileGradientEnd = Color(0xFF00334E);
+
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [primary, Color(0xFF1E8E99)],

@@ -19,9 +19,24 @@ class DashboardController extends GetxController {
   // For Leave Management Sub-sections
   final selectedLeaveSubSection = 0.obs; // 0: Apply Leave, 1: Leave Status/Approvals
   final selectedLeaveDate = "".obs;
+  final isMultipleLeave = false.obs;
+  final multipleSelectedDates = <DateTime>[].obs;
+
+  // For Employee Management Sub-sections
+  final selectedEmployeeSubSection = 0.obs; // 0: Employee List, 1: Add Employee
+  final employeeCurrentPage = 1.obs;
+  final employeesPerPage = 10;
+
+  // For Stationary Sub-sections
+  final selectedStationarySubSection = 0.obs; // 0: Stock In, 1: Stock Out
+  final inventoryPage = 1.obs; // Shared for sub-sections to keep it simple or distinct if needed
+  
+  // Research Staff Pagination
+  final researchStaffPage = 1.obs;
 
   // Dashboard Stats
   final onLeaveToday = 8.obs;
+  final isLeaveListExpanded = true.obs;
 
   void changeIndex(int index) {
     selectedIndex.value = index;
@@ -29,10 +44,39 @@ class DashboardController extends GetxController {
     if (index != 1) {
       selectedResearchSubSection.value = 0;
       selectedStoreCategory.value = "";
+      selectedStationarySubSection.value = 0;
     }
     if (index != 2) selectedHostelSubSection.value = 0;
     if (index != 3) selectedGroundSubSection.value = 0;
-    if (index != 5) selectedLeaveSubSection.value = 0;
+    if (index != 5) {
+      selectedLeaveSubSection.value = 0;
+      resetLeaveForm();
+    }
+    if (index != 6) selectedEmployeeSubSection.value = 0;
+  }
+
+  void resetLeaveForm() {
+    selectedLeaveDate.value = "";
+    isMultipleLeave.value = false;
+    multipleSelectedDates.clear();
+  }
+
+  bool addLeaveDate(DateTime date) {
+    if (multipleSelectedDates.length >= 4) return false;
+    if (!multipleSelectedDates.contains(date)) {
+      multipleSelectedDates.add(date);
+      return true;
+    }
+    return false;
+  }
+
+  void removeLeaveDate(DateTime date) {
+    multipleSelectedDates.remove(date);
+  }
+
+  void changeEmployeeSubSection(int index) {
+    selectedEmployeeSubSection.value = index;
+    if (index == 0) employeeCurrentPage.value = 1;
   }
 
   void changeResearchSubSection(int index) {

@@ -20,7 +20,7 @@ class ForgotPasswordView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.lock_reset, size: 80, color: AppColors.primary),
+              const Icon(Icons.lock_open, size: 80, color: AppColors.primary),
               const SizedBox(height: 24),
               Text(
                 'Forgot Password?',
@@ -40,7 +40,6 @@ class ForgotPasswordView extends StatelessWidget {
               const CustomTextField(
                 hintText: 'Enter your email',
                 labelText: 'Email Address',
-                prefixIcon: Icons.email_outlined,
               ),
               const SizedBox(height: 32),
               CustomButton(

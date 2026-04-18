@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../common/utils/app_images.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/widgets/custom_button.dart';
@@ -31,10 +32,15 @@ class LoginView extends GetView<LoginController> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.science_outlined, size: 100, color: Colors.white),
+                        Image.asset(
+                          AppImages.logo,
+                          height: 120,
+                          width: 120,
+                          fit: BoxFit.contain,
+                        ),
                         const SizedBox(height: 20),
                         Text(
-                          'VIRSACO SOCIETY',
+                          'VIRSACO',
                           style: GoogleFonts.outfit(
                             fontSize: 42,
                             fontWeight: FontWeight.bold,
@@ -76,8 +82,13 @@ class LoginView extends GetView<LoginController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (isMobile) ...[
-              const Center(
-                child: Icon(Icons.science_outlined, size: 64, color: AppColors.primary),
+               Center(
+                child: Image.asset(
+                  AppImages.logo,
+                  height: 80,
+                  width: 80,
+                  fit: BoxFit.contain,
+                ),
               ),
               const SizedBox(height: 24),
             ],
@@ -102,7 +113,6 @@ class LoginView extends GetView<LoginController> {
               controller: controller.emailController,
               hintText: 'Enter your email',
               labelText: 'Email Address',
-              prefixIcon: Icons.email_outlined,
             ),
             const SizedBox(height: 24),
             Obx(() => CustomTextField(
@@ -110,7 +120,6 @@ class LoginView extends GetView<LoginController> {
                   hintText: 'Enter your password',
                   labelText: 'Password',
                   isPassword: !controller.isPasswordVisible.value,
-                  prefixIcon: Icons.lock_outline,
                   suffixIcon: IconButton(
                     icon: Icon(
                       controller.isPasswordVisible.value
@@ -143,25 +152,6 @@ class LoginView extends GetView<LoginController> {
                   onPressed: controller.login,
                 )),
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Don't have an account? ",
-                  style: GoogleFonts.inter(color: AppColors.grey),
-                ),
-                TextButton(
-                  onPressed: () => Get.toNamed(Routes.SIGNUP),
-                  child: Text(
-                    'Sign Up',
-                    style: GoogleFonts.inter(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../common/utils/app_images.dart';
 import '../../../../common/values/app_colors.dart';
 import '../dashboard_controller.dart';
 
@@ -9,57 +10,87 @@ class SideMenu extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      elevation: 0,
-      backgroundColor: AppColors.secondary,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.secondary,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(5, 0),
+          ),
+        ],
+      ),
       child: Column(
         children: [
           _buildLogo(),
-          const SizedBox(height: 20),
-          _DrawerListTile(
-            title: "Dashboard",
-            icon: Icons.dashboard_outlined,
-            index: 0,
-            press: () => controller.changeIndex(0),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Divider(color: Colors.white10, height: 1),
           ),
-          _DrawerListTile(
-            title: "Research Building",
-            icon: Icons.biotech_outlined,
-            index: 1,
-            press: () => controller.changeIndex(1),
+          const SizedBox(height: 24),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _DrawerListTile(
+                    title: "Dashboard",
+                    icon: Icons.dashboard,
+                    index: 0,
+                    press: () => controller.changeIndex(0),
+                  ),
+                  _DrawerListTile(
+                    title: "Research Building",
+                    icon: Icons.science,
+                    index: 1,
+                    press: () => controller.changeIndex(1),
+                  ),
+                  _DrawerListTile(
+                    title: "Hostel",
+                    icon: Icons.hotel,
+                    index: 2,
+                    press: () => controller.changeIndex(2),
+                  ),
+                  _DrawerListTile(
+                    title: "Ground Management",
+                    icon: Icons.landscape,
+                    index: 3,
+                    press: () => controller.changeIndex(3),
+                  ),
+                  _DrawerListTile(
+                    title: "Leave Management",
+                    icon: Icons.calendar_today,
+                    index: 4,
+                    press: () => controller.changeIndex(4),
+                  ),
+                  _DrawerListTile(
+                    title: "Employee Management",
+                    icon: Icons.people,
+                    index: 6,
+                    press: () => controller.changeIndex(6),
+                  ),
+                ],
+              ),
+            ),
           ),
-          _DrawerListTile(
-            title: "Hostel",
-            icon: Icons.hotel_outlined,
-            index: 2,
-            press: () => controller.changeIndex(2),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Divider(color: Colors.white10, height: 1),
           ),
-          _DrawerListTile(
-            title: "Ground Management",
-            icon: Icons.landscape_outlined,
-            index: 3,
-            press: () => controller.changeIndex(3),
-          ),
-          _DrawerListTile(
-            title: "Leave Management",
-            icon: Icons.calendar_month_outlined,
-            index: 4,
-            press: () => controller.changeIndex(4),
-          ),
-          const Spacer(),
+          const SizedBox(height: 16),
           _DrawerListTile(
             title: "Settings",
-            icon: Icons.settings_outlined,
+            icon: Icons.settings,
             index: 5,
             press: () {},
           ),
           _DrawerListTile(
             title: "Logout",
-            icon: Icons.logout,
+            icon: Icons.exit_to_app,
             index: -1,
             press: () => controller.logout(),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -67,39 +98,57 @@ class SideMenu extends GetView<DashboardController> {
 
   Widget _buildLogo() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
+                  color: AppColors.primary.withOpacity(0.2),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
                 ),
               ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.asset(
-                "assets/images/logo.png",
-                height: 40,
-                width: 40,
+                AppImages.logo,
+                height: 32,
+                width: 32,
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          const SizedBox(width: 15),
-          Text(
-            "Virsaco",
-            style: GoogleFonts.outfit(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 1.2,
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "VIRSACO",
+                  style: GoogleFonts.outfit(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                Text(
+                  "Admin Portal",
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white38,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -108,7 +157,7 @@ class SideMenu extends GetView<DashboardController> {
   }
 }
 
-class _DrawerListTile extends StatelessWidget {
+class _DrawerListTile extends StatefulWidget {
   const _DrawerListTile({
     required this.title,
     required this.icon,
@@ -122,34 +171,73 @@ class _DrawerListTile extends StatelessWidget {
   final int index;
 
   @override
+  State<_DrawerListTile> createState() => _DrawerListTileState();
+}
+
+class _DrawerListTileState extends State<_DrawerListTile> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
     final DashboardController controller = Get.find();
 
     return Obx(() {
-      final isSelected = controller.selectedIndex.value == index;
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.transparent,
-        ),
-        child: ListTile(
-          onTap: press,
-          horizontalTitleGap: 0.0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          leading: Icon(
-            icon,
-            color: isSelected ? AppColors.primary : Colors.white54,
-            size: 20,
-          ),
-          title: Text(
-            title,
-            style: GoogleFonts.inter(
-              color: isSelected ? AppColors.primary : Colors.white54,
-              fontSize: 14,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      final isSelected = controller.selectedIndex.value == widget.index;
+      final activeColor = isSelected ? AppColors.primary : Colors.white;
+
+      return MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: GestureDetector(
+          onTap: widget.press,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: isSelected
+                  ? AppColors.primary.withOpacity(0.15)
+                  : (_isHovered ? Colors.white.withOpacity(0.05) : Colors.transparent),
+              border: Border.all(
+                color: isSelected ? AppColors.primary.withOpacity(0.3) : Colors.transparent,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  widget.icon,
+                  color: isSelected ? AppColors.primary : Colors.white54,
+                  size: 20,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    widget.title,
+                    style: GoogleFonts.outfit(
+                      color: isSelected ? Colors.white : Colors.white54,
+                      fontSize: 15,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+                if (isSelected)
+                  Container(
+                    width: 4,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.5),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

@@ -11,7 +11,16 @@ class CustomTextField extends StatelessWidget {
   final IconData? prefixIcon;
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
+  final void Function(String)? onChanged;
   final bool filled;
+  final bool readOnly;
+  final int? maxLines;
+  final int? minLines;
+  final TextInputAction? textInputAction;
+  final FocusNode? focusNode;
+  final void Function(String)? onFieldSubmitted;
+  final bool enabled;
+  final VoidCallback? onTap;
 
   const CustomTextField({
     super.key,
@@ -23,7 +32,16 @@ class CustomTextField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.validator,
+    this.onChanged,
     this.filled = true,
+    this.readOnly = false,
+    this.maxLines = 1,
+    this.minLines,
+    this.textInputAction,
+    this.focusNode,
+    this.onFieldSubmitted,
+    this.enabled = true,
+    this.onTap,
   });
 
   @override
@@ -47,8 +65,20 @@ class CustomTextField extends StatelessWidget {
           obscureText: isPassword,
           keyboardType: keyboardType,
           validator: validator,
+          onChanged: onChanged,
+          readOnly: readOnly,
+          maxLines: maxLines,
+          minLines: minLines,
+          textInputAction: textInputAction,
+          focusNode: focusNode,
+          onFieldSubmitted: onFieldSubmitted,
+          enabled: enabled,
+          onTap: onTap,
           cursorColor: AppColors.primary,
-          style: GoogleFonts.inter(fontSize: 15, color: AppColors.black),
+          style: GoogleFonts.inter(
+            fontSize: 15,
+            color: enabled ? AppColors.black : AppColors.grey,
+          ),
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: GoogleFonts.inter(
@@ -60,7 +90,9 @@ class CustomTextField extends StatelessWidget {
                 : null,
             suffixIcon: suffixIcon,
             filled: filled,
-            fillColor: filled ? AppColors.white : Colors.transparent,
+            fillColor: filled 
+                ? (enabled ? AppColors.white : AppColors.lightGrey.withOpacity(0.2))
+                : Colors.transparent,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
@@ -80,6 +112,10 @@ class CustomTextField extends StatelessWidget {
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: AppColors.lightGrey.withOpacity(0.5), width: 1),
             ),
           ),
         ),

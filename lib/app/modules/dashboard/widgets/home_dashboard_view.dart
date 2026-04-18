@@ -10,7 +10,7 @@ class HomeDashboardView extends GetView<DashboardController> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -19,7 +19,7 @@ class HomeDashboardView extends GetView<DashboardController> {
           const SizedBox(height: 32),
           _buildQuickStats(context),
           const SizedBox(height: 48),
-          Expanded(child: _buildOnLeaveSection(context)),
+          _buildOnLeaveSection(context),
         ],
       ),
     );
@@ -68,8 +68,17 @@ class HomeDashboardView extends GetView<DashboardController> {
       children: [
         Row(
           children: [
-            const Icon(Icons.event_note, color: AppColors.primary, size: 24),
-            const SizedBox(width: 12),
+            Obx(() => IconButton(
+              onPressed: () => controller.isLeaveListExpanded.value = !controller.isLeaveListExpanded.value,
+              icon: AnimatedRotation(
+                turns: controller.isLeaveListExpanded.value ? 0 : -0.25,
+                duration: const Duration(milliseconds: 300),
+                child: const Icon(Icons.keyboard_arrow_down, color: AppColors.primary, size: 28),
+              ),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            )),
+            const SizedBox(width: 8),
             Text(
               "On Leave Today",
               style: GoogleFonts.outfit(
@@ -93,8 +102,8 @@ class HomeDashboardView extends GetView<DashboardController> {
           ],
         ),
         const SizedBox(height: 24),
-        Expanded(
-          child: Container(
+        Obx(() => AnimatedCrossFade(
+          firstChild: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: AppColors.white,
@@ -104,7 +113,8 @@ class HomeDashboardView extends GetView<DashboardController> {
               ],
             ),
             child: ListView.separated(
-              physics: const BouncingScrollPhysics(),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: 8,
               separatorBuilder: (context, index) => const Divider(height: 32, color: AppColors.lightGrey),
               itemBuilder: (context, index) {
@@ -118,7 +128,10 @@ class HomeDashboardView extends GetView<DashboardController> {
               },
             ),
           ),
-        ),
+          secondChild: const SizedBox(width: double.infinity),
+          crossFadeState: controller.isLeaveListExpanded.value ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+          duration: const Duration(milliseconds: 300),
+        )),
       ],
     );
   }
@@ -141,56 +154,77 @@ class _LeaveListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: AppColors.primary.withOpacity(0.1),
-          child: Text(name[0], style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 18)),
-        ),
-        const SizedBox(width: 20),
-        Expanded(
-          flex: 3,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(name, style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.secondary, fontSize: 16)),
-              Text(role, style: GoogleFonts.inter(fontSize: 13, color: AppColors.grey)),
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: AppColors.primary.withOpacity(0.1),
+            child: Text(name[0],
+                style: const TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18)),
           ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(leaveType, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.primary, fontSize: 14)),
-              Text(duration, style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey)),
-            ],
-          ),
-        ),
-        if (Responsive.isDesktop(context))
+          const SizedBox(width: 20),
           Expanded(
-            flex: 4,
-            child: Text(
-              "“$reason”",
-              style: GoogleFonts.inter(fontSize: 13, color: AppColors.grey, fontStyle: FontStyle.italic),
-              overflow: TextOverflow.ellipsis,
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name,
+                    style: GoogleFonts.inter(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.secondary,
+                        fontSize: 16)),
+                Text(role,
+                    style: GoogleFonts.inter(fontSize: 13, color: AppColors.grey)),
+              ],
             ),
           ),
-        const SizedBox(width: 20),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppColors.error.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+          Expanded(
+            flex: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(leaveType,
+                    style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                        fontSize: 14)),
+                Text(duration,
+                    style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey)),
+              ],
+            ),
           ),
-          child: const Text(
-            "Away",
-            style: TextStyle(color: AppColors.error, fontSize: 12, fontWeight: FontWeight.bold),
+          if (Responsive.isDesktop(context))
+            Expanded(
+              flex: 4,
+              child: Text(
+                "“$reason”",
+                style: GoogleFonts.inter(
+                    fontSize: 13, color: AppColors.grey, fontStyle: FontStyle.italic),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          const SizedBox(width: 20),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.error.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Text(
+              "Away",
+              style: TextStyle(
+                  color: AppColors.error,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

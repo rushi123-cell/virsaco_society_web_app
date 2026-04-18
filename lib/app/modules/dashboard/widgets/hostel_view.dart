@@ -140,7 +140,7 @@ class HostelView extends GetView<DashboardController> {
               width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 320 : 100),
               child: Column(
                 children: [
-                  _DataHeader(columns: const ["Guest Name", "Room", "Check-in", "Duration", "Status"]),
+                  _DataHeader(columns: const ["Guest Name", "Room", "Check-in", "Status"]),
                   const SizedBox(height: 8),
                   ListView.separated(
                     shrinkWrap: true,
@@ -148,7 +148,7 @@ class HostelView extends GetView<DashboardController> {
                     itemCount: 3,
                     separatorBuilder: (context, index) => const SizedBox(height: 8),
                     itemBuilder: (context, index) => _GenericDataCard(
-                      values: ["Guest ${index + 1}", "A-10${index + 1}", "Feb 21, 2024", "3 Days", "Confirmed"],
+                      values: ["Guest ${index + 1}", "A-10${index + 1}", "Feb 21, 2024", "Confirmed"],
                       isStatus: true,
                     ),
                   ),
