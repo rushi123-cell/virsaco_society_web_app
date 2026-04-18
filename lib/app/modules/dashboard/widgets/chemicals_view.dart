@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../common/utils/app_images.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import '../dashboard_controller.dart';
@@ -18,11 +19,7 @@ class ChemicalsView extends GetView<DashboardController> {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.science,
-                color: AppColors.primary,
-                size: 32,
-              ),
+              const Icon(Icons.science, color: AppColors.primary, size: 32),
               const SizedBox(width: 20),
               Text(
                 "Chemicals Management",
@@ -104,66 +101,151 @@ class ChemicalsView extends GetView<DashboardController> {
             decoration: InputDecoration(
               hintText: "Search chemicals...",
               hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.grey),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Image.asset(
+                  AppImages.search,
+                  width: 18,
+                  height: 18,
+                ),
+              ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
             ),
           ),
         ),
         Expanded(
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 900),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                            decoration: BoxDecoration(
-                              color: AppColors.secondary,
-                              borderRadius: BorderRadius.circular(12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 900),
+                      child: SizedBox(
+                        width:
+                            MediaQuery.of(context).size.width -
+                            (Responsive.isDesktop(context) ? 360 : 64),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 18,
+                              ),
+                              decoration: const BoxDecoration(
+                                color: AppColors.secondary,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: _headerText("Chemical Name"),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: _headerText("Received Date"),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: _headerText("Quantity"),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: _headerText("Source"),
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: Row(
-                              children: [
-                                Expanded(flex: 3, child: _headerText("Chemical Name")),
-                                Expanded(flex: 2, child: _headerText("Received Date")),
-                                Expanded(flex: 2, child: _headerText("Quantity")),
-                                Expanded(flex: 2, child: _headerText("Approx Use")),
-                                Expanded(flex: 2, child: _headerText("Vendor")),
-                              ],
+                            Expanded(
+                              child: ListView.separated(
+                                itemCount: 10,
+                                separatorBuilder: (context, index) =>
+                                    const Divider(
+                                      height: 1,
+                                      color: AppColors.lightGrey,
+                                    ),
+                                itemBuilder: (context, index) {
+                                  return _IncomingCard(
+                                    item: index % 3 == 0
+                                        ? "Sodium Chloride"
+                                        : (index % 3 == 1
+                                              ? "Ethanol (95%)"
+                                              : "Sulfuric Acid"),
+                                    date: "Apr ${10 - (index % 10)}, 2024",
+                                    qty: "500g",
+                                    approxUse: "10-15 lab tests",
+                                    source: "Global Lab Supplies",
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Expanded(
-                            child: ListView.separated(
-                              itemCount: 15,
-                              separatorBuilder: (context, index) => const SizedBox(height: 8),
-                              itemBuilder: (context, index) {
-                                return _IncomingCard(
-                                  item: index % 3 == 0 ? "Sodium Chloride" : (index % 3 == 1 ? "Ethanol (95%)" : "Sulfuric Acid"),
-                                  date: "Apr ${10 - (index % 10)}, 2024",
-                                  qty: "500g",
-                                  approxUse: "10-15 lab tests",
-                                  source: "Global Lab Supplies",
-                                );
-                              },
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: CustomPagination(currentPage: controller.inventoryPage),
-              ),
-            ],
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  decoration: const BoxDecoration(
+                    border: Border(top: BorderSide(color: AppColors.lightGrey)),
+                  ),
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 8,
+                    children: [
+                      Obx(() {
+                        const totalItems = 45;
+                        const itemsPerPage = 10;
+                        final start =
+                            (controller.inventoryPage.value - 1) *
+                                itemsPerPage +
+                            1;
+                        final end =
+                            (controller.inventoryPage.value * itemsPerPage) >
+                                totalItems
+                            ? totalItems
+                            : (controller.inventoryPage.value * itemsPerPage);
+                        return Text(
+                          "Showing $start-$end of $totalItems",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: AppColors.grey,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }),
+                      CustomPagination(
+                        currentPage: controller.inventoryPage,
+                        totalPages: 5,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -196,68 +278,155 @@ class ChemicalsView extends GetView<DashboardController> {
             decoration: InputDecoration(
               hintText: "Search usage history...",
               hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.grey),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Image.asset(
+                  AppImages.search,
+                  width: 18,
+                  height: 18,
+                ),
+              ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
             ),
           ),
         ),
         Expanded(
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 1200),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.circular(12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 1200),
+                      child: SizedBox(
+                        width:
+                            MediaQuery.of(context).size.width -
+                            (Responsive.isDesktop(context) ? 360 : 64),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 18,
+                              ),
+                              decoration: const BoxDecoration(
+                                color: AppColors.secondary,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: _headerText("Chemical"),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: _headerText("Taken By"),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: _headerText("Division"),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: _headerText("Approx Use"),
+                                  ),
+                                  Expanded(flex: 2, child: _headerText("Date")),
+                                  Expanded(
+                                    flex: 2,
+                                    child: _headerText("Status"),
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: Row(
-                              children: [
-                                Expanded(flex: 2, child: _headerText("Chemical")),
-                                Expanded(flex: 2, child: _headerText("Taken By")),
-                                Expanded(flex: 2, child: _headerText("Division")),
-                                Expanded(flex: 2, child: _headerText("Approx Use")),
-                                Expanded(flex: 2, child: _headerText("Date")),
-                                Expanded(flex: 2, child: _headerText("Status")),
-                              ],
+                            Expanded(
+                              child: ListView.separated(
+                                itemCount: 10,
+                                separatorBuilder: (context, index) =>
+                                    const Divider(
+                                      height: 1,
+                                      color: AppColors.lightGrey,
+                                    ),
+                                itemBuilder: (context, index) {
+                                  return _DistributionCard(
+                                    item: index % 2 == 0
+                                        ? "Sodium Chloride"
+                                        : "Ethanol",
+                                    person: "Researcher ${index + 1}",
+                                    division: "Main Lab",
+                                    approxUse: "100g",
+                                    status: "Used",
+                                    takenDate: 'Apr 08, 2024',
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Expanded(
-                            child: ListView.separated(
-                              itemCount: 15,
-                              separatorBuilder: (context, index) => const SizedBox(height: 8),
-                              itemBuilder: (context, index) {
-                                return _DistributionCard(
-                                  item: index % 2 == 0 ? "Sodium Chloride" : "Ethanol",
-                                  person: "Researcher ${index + 1}",
-                                  division: "Chemistry Lab",
-                                  approxUse: "5gm",
-                                  takenDate: "Apr 05, 2024",
-                                  status: "Used In Lab",
-                                );
-                              },
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: CustomPagination(currentPage: controller.inventoryPage),
-              ),
-            ],
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  decoration: const BoxDecoration(
+                    border: Border(top: BorderSide(color: AppColors.lightGrey)),
+                  ),
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 8,
+                    children: [
+                      Obx(() {
+                        const totalItems = 45;
+                        const itemsPerPage = 10;
+                        final start =
+                            (controller.inventoryPage.value - 1) *
+                                itemsPerPage +
+                            1;
+                        final end =
+                            (controller.inventoryPage.value * itemsPerPage) >
+                                totalItems
+                            ? totalItems
+                            : (controller.inventoryPage.value * itemsPerPage);
+                        return Text(
+                          "Showing $start-$end of $totalItems",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: AppColors.grey,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      }),
+                      CustomPagination(
+                        currentPage: controller.inventoryPage,
+                        totalPages: 5,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -267,7 +436,11 @@ class ChemicalsView extends GetView<DashboardController> {
   Widget _headerText(String text) {
     return Text(
       text,
-      style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+      style: GoogleFonts.inter(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+        fontSize: 13,
+      ),
     );
   }
 }
@@ -278,7 +451,12 @@ class _SubNavItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _SubNavItem({required this.title, required this.icon, required this.isSelected, required this.onTap});
+  const _SubNavItem({
+    required this.title,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -290,13 +468,31 @@ class _SubNavItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected ? AppColors.white : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: isSelected ? [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)] : [],
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                  ),
+                ]
+              : [],
         ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: isSelected ? AppColors.primary : AppColors.grey),
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected ? AppColors.primary : AppColors.grey,
+            ),
             const SizedBox(width: 8),
-            Text(title, style: GoogleFonts.inter(fontSize: 13, fontWeight: isSelected ? FontWeight.bold : FontWeight.w500, color: isSelected ? AppColors.primary : AppColors.grey)),
+            Text(
+              title,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected ? AppColors.primary : AppColors.grey,
+              ),
+            ),
           ],
         ),
       ),
@@ -311,7 +507,13 @@ class _IncomingCard extends StatefulWidget {
   final String approxUse;
   final String source;
 
-  const _IncomingCard({required this.item, required this.date, required this.qty, required this.approxUse, required this.source});
+  const _IncomingCard({
+    required this.item,
+    required this.date,
+    required this.qty,
+    required this.approxUse,
+    required this.source,
+  });
 
   @override
   State<_IncomingCard> createState() => _IncomingCardState();
@@ -329,18 +531,66 @@ class _IncomingCardState extends State<_IncomingCard> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
-          color: _isHovered ? AppColors.primary.withOpacity(0.05) : AppColors.white,
+          color: _isHovered
+              ? AppColors.primary.withOpacity(0.05)
+              : AppColors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _isHovered ? AppColors.primary.withOpacity(0.3) : Colors.transparent),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(_isHovered ? 0.08 : 0.03), blurRadius: _isHovered ? 12 : 6, offset: const Offset(0, 4))],
+          border: Border.all(
+            color: _isHovered
+                ? AppColors.primary.withOpacity(0.3)
+                : Colors.transparent,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(_isHovered ? 0.08 : 0.03),
+              blurRadius: _isHovered ? 12 : 6,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            Expanded(flex: 3, child: Text(widget.item, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.secondary))),
-            Expanded(flex: 2, child: Text(widget.date, style: GoogleFonts.inter(color: AppColors.grey))),
-            Expanded(flex: 2, child: Text(widget.qty, style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.primary))),
-            Expanded(flex: 2, child: Text(widget.approxUse, style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
-            Expanded(flex: 2, child: Text(widget.source, style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
+            Expanded(
+              flex: 3,
+              child: Text(
+                widget.item,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.secondary,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                widget.date,
+                style: GoogleFonts.inter(color: AppColors.grey),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                widget.qty,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                widget.approxUse,
+                style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                widget.source,
+                style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13),
+              ),
+            ),
           ],
         ),
       ),
@@ -356,7 +606,14 @@ class _DistributionCard extends StatefulWidget {
   final String takenDate;
   final String status;
 
-  const _DistributionCard({required this.item, required this.person, required this.division, required this.approxUse, required this.takenDate, required this.status});
+  const _DistributionCard({
+    required this.item,
+    required this.person,
+    required this.division,
+    required this.approxUse,
+    required this.takenDate,
+    required this.status,
+  });
 
   @override
   State<_DistributionCard> createState() => _DistributionCardState();
@@ -374,24 +631,86 @@ class _DistributionCardState extends State<_DistributionCard> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
-          color: _isHovered ? AppColors.primary.withOpacity(0.05) : AppColors.white,
+          color: _isHovered
+              ? AppColors.primary.withOpacity(0.05)
+              : AppColors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _isHovered ? AppColors.primary.withOpacity(0.3) : Colors.transparent),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(_isHovered ? 0.08 : 0.03), blurRadius: _isHovered ? 12 : 6, offset: const Offset(0, 4))],
+          border: Border.all(
+            color: _isHovered
+                ? AppColors.primary.withOpacity(0.3)
+                : Colors.transparent,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(_isHovered ? 0.08 : 0.03),
+              blurRadius: _isHovered ? 12 : 6,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            Expanded(flex: 2, child: Text(widget.item, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.secondary))),
-            Expanded(flex: 2, child: Text(widget.person, style: GoogleFonts.inter(color: AppColors.secondary))),
-            Expanded(flex: 2, child: Text(widget.division, style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
-            Expanded(flex: 2, child: Text(widget.approxUse, style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.orange))),
-            Expanded(flex: 2, child: Text(widget.takenDate, style: GoogleFonts.inter(color: AppColors.grey))),
+            Expanded(
+              flex: 2,
+              child: Text(
+                widget.item,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.secondary,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                widget.person,
+                style: GoogleFonts.inter(color: AppColors.secondary),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                widget.division,
+                style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                widget.approxUse,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange,
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                widget.takenDate,
+                style: GoogleFonts.inter(color: AppColors.grey),
+              ),
+            ),
             Expanded(
               flex: 2,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
-                child: Text(widget.status, textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  widget.status,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
               ),
             ),
           ],

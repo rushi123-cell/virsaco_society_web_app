@@ -32,40 +32,34 @@ class SideMenu extends GetView<DashboardController> {
           Expanded(
             child: SingleChildScrollView(
               child: Column(
-                children: [
+                 children: [
                   _DrawerListTile(
                     title: "Dashboard",
-                    icon: Icons.dashboard,
                     index: 0,
                     press: () => controller.changeIndex(0),
                   ),
                   _DrawerListTile(
                     title: "Research Building",
-                    icon: Icons.science,
                     index: 1,
                     press: () => controller.changeIndex(1),
                   ),
                   _DrawerListTile(
                     title: "Hostel",
-                    icon: Icons.hotel,
                     index: 2,
                     press: () => controller.changeIndex(2),
                   ),
                   _DrawerListTile(
                     title: "Ground Management",
-                    icon: Icons.landscape,
                     index: 3,
                     press: () => controller.changeIndex(3),
                   ),
                   _DrawerListTile(
                     title: "Leave Management",
-                    icon: Icons.calendar_today,
                     index: 4,
                     press: () => controller.changeIndex(4),
                   ),
                   _DrawerListTile(
                     title: "Employee Management",
-                    icon: Icons.people,
                     index: 6,
                     press: () => controller.changeIndex(6),
                   ),
@@ -80,13 +74,11 @@ class SideMenu extends GetView<DashboardController> {
           const SizedBox(height: 16),
           _DrawerListTile(
             title: "Settings",
-            icon: Icons.settings,
             index: 5,
             press: () {},
           ),
           _DrawerListTile(
             title: "Logout",
-            icon: Icons.exit_to_app,
             index: -1,
             press: () => controller.logout(),
           ),
@@ -160,13 +152,11 @@ class SideMenu extends GetView<DashboardController> {
 class _DrawerListTile extends StatefulWidget {
   const _DrawerListTile({
     required this.title,
-    required this.icon,
     required this.press,
     required this.index,
   });
 
   final String title;
-  final IconData icon;
   final VoidCallback press;
   final int index;
 
@@ -205,12 +195,6 @@ class _DrawerListTileState extends State<_DrawerListTile> {
             ),
             child: Row(
               children: [
-                Icon(
-                  widget.icon,
-                  color: isSelected ? AppColors.primary : Colors.white54,
-                  size: 20,
-                ),
-                const SizedBox(width: 16),
                 Expanded(
                   child: Text(
                     widget.title,

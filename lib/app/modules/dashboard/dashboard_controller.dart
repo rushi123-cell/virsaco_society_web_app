@@ -37,6 +37,7 @@ class DashboardController extends GetxController {
   // Dashboard Stats
   final onLeaveToday = 8.obs;
   final isLeaveListExpanded = true.obs;
+  final leaveListPage = 1.obs;
 
   void changeIndex(int index) {
     selectedIndex.value = index;

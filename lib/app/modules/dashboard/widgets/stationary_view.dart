@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../common/utils/app_images.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import '../dashboard_controller.dart';
@@ -103,67 +104,101 @@ class StationaryView extends GetView<DashboardController> {
           ),
           child: TextField(
             decoration: InputDecoration(
-              hintText: "Search stock in...",
+              hintText: " Search stock in...",
               hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.grey),
-              prefixIcon: const Icon(Icons.search, size: 20, color: AppColors.primary),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Image.asset(AppImages.search, width: 18, height: 18),
+              ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
             ),
           ),
         ),
         Expanded(
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 800),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                            decoration: BoxDecoration(
-                              color: AppColors.secondary,
-                              borderRadius: BorderRadius.circular(12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, 10)),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Table
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 800),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                              decoration: const BoxDecoration(
+                                color: AppColors.secondary,
+                                borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(flex: 3, child: _headerText("Item Name")),
+                                  Expanded(flex: 2, child: _headerText("Received Date")),
+                                  Expanded(flex: 2, child: _headerText("Quantity")),
+                                  Expanded(flex: 3, child: _headerText("Source")),
+                                ],
+                              ),
                             ),
-                            child: Row(
-                              children: [
-                                Expanded(flex: 3, child: _headerText("Item Name")),
-                                Expanded(flex: 2, child: _headerText("Received Date")),
-                                Expanded(flex: 2, child: _headerText("Quantity")),
-                                Expanded(flex: 2, child: _headerText("Source/Vendor")),
-                              ],
+                            Expanded(
+                              child: ListView.separated(
+                                itemCount: 10,
+                                separatorBuilder: (context, index) => const Divider(height: 1, color: AppColors.lightGrey),
+                                itemBuilder: (context, index) {
+                                  return _IncomingCard(
+                                    item: index % 3 == 0 ? "A4 Paper Bundles" : (index % 3 == 1 ? "Blue Pens (Box)" : "Calculators"),
+                                    date: "Apr ${10 - (index % 10)}, 2024",
+                                    qty: "${(index + 1) * 10} Units",
+                                    source: "Virsaco Supplies Ltd",
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Expanded(
-                            child: ListView.separated(
-                              itemCount: 15,
-                              separatorBuilder: (context, index) => const SizedBox(height: 8),
-                              itemBuilder: (context, index) {
-                                return _IncomingCard(
-                                  item: index % 3 == 0 ? "A4 Paper Bundles" : (index % 3 == 1 ? "Blue Pens (Box)" : "Calculators"),
-                                  date: "Apr ${10 - (index % 10)}, 2024",
-                                  qty: "${(index + 1) * 10} Units",
-                                  source: "Virsaco Supplies Ltd",
-                                );
-                              },
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: CustomPagination(currentPage: controller.inventoryPage),
-              ),
-            ],
+                // Pagination
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  decoration: const BoxDecoration(
+                    border: Border(top: BorderSide(color: AppColors.lightGrey)),
+                  ),
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 8,
+                    children: [
+                      Obx(() {
+                        const totalItems = 45;
+                        const itemsPerPage = 10;
+                        final start = (controller.inventoryPage.value - 1) * itemsPerPage + 1;
+                        final end = (controller.inventoryPage.value * itemsPerPage) > totalItems ? totalItems : (controller.inventoryPage.value * itemsPerPage);
+                        return Text(
+                          "Showing $start-$end of $totalItems",
+                          style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey, fontWeight: FontWeight.bold),
+                        );
+                      }),
+                      CustomPagination(currentPage: controller.inventoryPage, totalPages: 5),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -195,71 +230,103 @@ class StationaryView extends GetView<DashboardController> {
           ),
           child: TextField(
             decoration: InputDecoration(
-              hintText: "Search usage history...",
+              hintText: " Search usage history...",
               hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.grey),
-              prefixIcon: const Icon(Icons.search, size: 20, color: AppColors.primary),
+              prefixIcon: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Image.asset(AppImages.search, width: 18, height: 18),
+              ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
             ),
           ),
         ),
         Expanded(
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 1100),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.circular(12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, 10)),
+              ],
+            ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 1100),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                              decoration: const BoxDecoration(
+                                color: AppColors.secondary,
+                                borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(flex: 2, child: _headerText("Item")),
+                                  Expanded(flex: 2, child: _headerText("Taken By")),
+                                  Expanded(flex: 2, child: _headerText("Division")),
+                                  Expanded(flex: 2, child: _headerText("Taken Date")),
+                                  Expanded(flex: 2, child: _headerText("Return Date")),
+                                  Expanded(flex: 2, child: _headerText("Status")),
+                                ],
+                              ),
                             ),
-                            child: Row(
-                              children: [
-                                Expanded(flex: 2, child: _headerText("Item")),
-                                Expanded(flex: 2, child: _headerText("Taken By")),
-                                Expanded(flex: 2, child: _headerText("Division")),
-                                Expanded(flex: 2, child: _headerText("Taken Date")),
-                                Expanded(flex: 2, child: _headerText("Return Date")),
-                                Expanded(flex: 2, child: _headerText("Status")),
-                              ],
+                            Expanded(
+                              child: ListView.separated(
+                                itemCount: 10,
+                                separatorBuilder: (context, index) => const Divider(height: 1, color: AppColors.lightGrey),
+                                itemBuilder: (context, index) {
+                                  return _DistributionCard(
+                                    item: index % 2 == 0 ? "Projector" : "Whiteboard Markers",
+                                    person: "Staff Member ${index + 1}",
+                                    division: index % 2 == 0 ? "Research Dept" : "Admin Office",
+                                    takenDate: "Apr 05, 2024",
+                                    returnDate: index % 3 == 0 ? "Pending" : "Apr 08, 2024",
+                                    status: index % 3 == 0 ? "Issued" : "Returned",
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 12),
-                          Expanded(
-                            child: ListView.separated(
-                              itemCount: 15,
-                              separatorBuilder: (context, index) => const SizedBox(height: 8),
-                              itemBuilder: (context, index) {
-                                return _DistributionCard(
-                                  item: index % 2 == 0 ? "Projector" : "Whiteboard Markers",
-                                  person: "Staff Member ${index + 1}",
-                                  division: index % 2 == 0 ? "Research Dept" : "Admin Office",
-                                  takenDate: "Apr 05, 2024",
-                                  returnDate: index % 3 == 0 ? "Pending" : "Apr 08, 2024",
-                                  status: index % 3 == 0 ? "Issued" : "Returned",
-                                );
-                              },
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: CustomPagination(currentPage: controller.inventoryPage),
-              ),
-            ],
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  decoration: const BoxDecoration(
+                    border: Border(top: BorderSide(color: AppColors.lightGrey)),
+                  ),
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 8,
+                    children: [
+                      Obx(() {
+                        const totalItems = 45;
+                        const itemsPerPage = 10;
+                        final start = (controller.inventoryPage.value - 1) * itemsPerPage + 1;
+                        final end = (controller.inventoryPage.value * itemsPerPage) > totalItems ? totalItems : (controller.inventoryPage.value * itemsPerPage);
+                        return Text(
+                          "Showing $start-$end of $totalItems",
+                          style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey, fontWeight: FontWeight.bold),
+                        );
+                      }),
+                      CustomPagination(currentPage: controller.inventoryPage, totalPages: 5),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],

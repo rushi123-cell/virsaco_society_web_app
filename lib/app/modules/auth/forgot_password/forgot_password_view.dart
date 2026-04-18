@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../common/utils/app_images.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../../../../common/widgets/custom_text_field.dart';
@@ -37,11 +38,11 @@ class ForgotPasswordView extends StatelessWidget {
                 style: GoogleFonts.inter(fontSize: 16, color: AppColors.grey),
               ),
               const SizedBox(height: 48),
-              const CustomTextField(
+               CustomTextField(
                 hintText: 'Enter your email',
                 labelText: 'Email Address',
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               CustomButton(
                 text: 'Send Reset Link',
                 onPressed: () => Get.back(),

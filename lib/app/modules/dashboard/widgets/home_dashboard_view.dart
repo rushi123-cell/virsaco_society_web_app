@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/custom_pagination.dart';
 import '../dashboard_controller.dart';
 
 class HomeDashboardView extends GetView<DashboardController> {
@@ -112,20 +113,53 @@ class HomeDashboardView extends GetView<DashboardController> {
                 BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, 10)),
               ],
             ),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 8,
-              separatorBuilder: (context, index) => const Divider(height: 32, color: AppColors.lightGrey),
-              itemBuilder: (context, index) {
-                return _LeaveListItem(
-                  name: "Staff Member ${index + 1}",
-                  role: index % 2 == 0 ? "Senior Researcher" : "Lab Assistant",
-                  leaveType: index % 3 == 0 ? "Sick Leave" : "Casual Leave",
-                  duration: "Full Day",
-                  reason: "Personal work at home.",
-                );
-              },
+            child: Column(
+              children: [
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: 8,
+                  separatorBuilder: (context, index) => const Divider(height: 32, color: AppColors.lightGrey),
+                  itemBuilder: (context, index) {
+                    return _LeaveListItem(
+                      name: "Staff Member ${index + 1}",
+                      role: index % 2 == 0 ? "Senior Researcher" : "Lab Assistant",
+                      leaveType: index % 3 == 0 ? "Sick Leave" : "Casual Leave",
+                      duration: "Full Day",
+                      reason: "Personal work at home.",
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  decoration: const BoxDecoration(
+                    border: Border(top: BorderSide(color: AppColors.lightGrey)),
+                  ),
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 8,
+                    children: [
+                      Obx(() {
+                        final totalItems = controller.onLeaveToday.value;
+                        const itemsPerPage = 10;
+                        final start = (controller.leaveListPage.value - 1) * itemsPerPage + 1;
+                        final end = (controller.leaveListPage.value * itemsPerPage) > totalItems
+                            ? totalItems
+                            : (controller.leaveListPage.value * itemsPerPage);
+                        return Text(
+                          "Showing $start-$end of $totalItems",
+                          style: GoogleFonts.inter(
+                              fontSize: 12, color: AppColors.grey, fontWeight: FontWeight.bold),
+                        );
+                      }),
+                      CustomPagination(currentPage: controller.leaveListPage, totalPages: 1),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
           secondChild: const SizedBox(width: double.infinity),

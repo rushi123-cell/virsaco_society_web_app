@@ -8,7 +8,7 @@ class CustomTextField extends StatelessWidget {
   final String? labelText;
   final bool isPassword;
   final TextInputType keyboardType;
-  final IconData? prefixIcon;
+  final String? prefixIconPath;
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
@@ -29,7 +29,7 @@ class CustomTextField extends StatelessWidget {
     this.labelText,
     this.isPassword = false,
     this.keyboardType = TextInputType.text,
-    this.prefixIcon,
+    this.prefixIconPath,
     this.suffixIcon,
     this.validator,
     this.onChanged,
@@ -85,8 +85,17 @@ class CustomTextField extends StatelessWidget {
               color: AppColors.grey.withOpacity(0.6),
               fontSize: 14,
             ),
-            prefixIcon: prefixIcon != null
-                ? Icon(prefixIcon, color: AppColors.primary, size: 20)
+            prefixIcon: prefixIconPath != null
+                ? Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Image.asset(
+                      prefixIconPath!,
+                      color: AppColors.primary,
+                      width: 20,
+                      height: 20,
+                      fit: BoxFit.contain,
+                    ),
+                  )
                 : null,
             suffixIcon: suffixIcon,
             filled: filled,

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../common/utils/app_images.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/custom_text_field.dart';
@@ -160,11 +161,14 @@ class EmployeeListView extends GetView<DashboardController> {
                   ),
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: "Search employees...",
+                      hintText: "Search employee by name, ID or post...",
                       hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.grey),
-                      prefixIcon: const Icon(Icons.search, size: 20, color: AppColors.primary),
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Image.asset(AppImages.search, color: AppColors.primary, width: 18, height: 18),
+                      ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
                   ),
                 ),
@@ -224,8 +228,11 @@ class EmployeeListView extends GetView<DashboardController> {
                   decoration: const BoxDecoration(
                     border: Border(top: BorderSide(color: AppColors.lightGrey)),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 8,
                     children: [
                       Obx(() => Text(
                         "Showing ${(controller.employeeCurrentPage.value - 1) * 10 + 1}-${(controller.employeeCurrentPage.value * 10) > totalEmployees ? totalEmployees : (controller.employeeCurrentPage.value * 10)} of $totalEmployees",
@@ -487,7 +494,6 @@ class _AddEmployeeViewState extends State<AddEmployeeView> {
           ),
           child: Row(
             children: [
-              const SizedBox(width: 4),
               const SizedBox(width: 12),
               Expanded(
                 child: DropdownButtonHideUnderline(

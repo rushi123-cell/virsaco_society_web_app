@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../common/utils/app_images.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/custom_text_field.dart';
@@ -141,7 +142,30 @@ class LeaveManagementView extends GetView<DashboardController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildLeaveBalance(context),
-          const SizedBox(height: 40),
+          const SizedBox(height: 24),
+          // Search bar
+          Container(
+            width: 400,
+            height: 45,
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.lightGrey),
+            ),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: " Search leave records...",
+                hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.grey),
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Image.asset(AppImages.search, width: 18, height: 18),
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
           controller.selectedLeaveSubSection.value == 0
               ? _buildApplyLeaveForm(context)
               : _buildLeaveStatusTable(context),
@@ -326,11 +350,6 @@ class LeaveManagementView extends GetView<DashboardController> {
                               (v == "Multiple Dates");
                         },
                         decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.event,
-                            color: AppColors.primary,
-                            size: 20,
-                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -583,7 +602,6 @@ class LeaveManagementView extends GetView<DashboardController> {
               .toList(),
           onChanged: (v) {},
           decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
