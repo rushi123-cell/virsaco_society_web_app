@@ -1,4 +1,4 @@
-package com.example.virsaco_society_web_app
+package com.virsaco.app
 
 import io.flutter.embedding.android.FlutterActivity
 

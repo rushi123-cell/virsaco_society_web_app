@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "994408346996",
+    "project_id": "virsaco-prod-rushita",
+    "storage_bucket": "virsaco-prod-rushita.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994408346996:android:91a20bd0a0ae664ad0a821",
+        "android_client_info": {
+          "package_name": "com.virsaco.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9lm4Gqb6WJQUvM3oVJIm4j2RVpImEn28"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

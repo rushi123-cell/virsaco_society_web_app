@@ -3,9 +3,17 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app/routes/app_pages.dart';
 import 'common/values/app_colors.dart';
+import 'core/config/env_config.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase dynamically based on environment
+  await Firebase.initializeApp(
+    options: EnvConfig.currentFirebaseOptions,
+  );
+
   runApp(const MyApp());
 }
 
