@@ -222,7 +222,7 @@ class ProfileView extends GetView<ProfileController> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: controller.saveProfile,
+                    onPressed: () => controller.saveProfile(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

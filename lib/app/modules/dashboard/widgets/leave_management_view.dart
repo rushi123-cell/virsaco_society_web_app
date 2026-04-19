@@ -6,6 +6,7 @@ import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/custom_text_field.dart';
 import '../dashboard_controller.dart';
+import '../../../../common/widgets/custom_toast.dart';
 
 class LeaveManagementView extends GetView<DashboardController> {
   const LeaveManagementView({super.key});
@@ -156,10 +157,7 @@ class LeaveManagementView extends GetView<DashboardController> {
               decoration: InputDecoration(
                 hintText: " Search leave records...",
                 hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.grey),
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Image.asset(AppImages.search, width: 18, height: 18),
-                ),
+                prefixIcon: Icon(Icons.search),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
@@ -429,11 +427,10 @@ class LeaveManagementView extends GetView<DashboardController> {
                                   );
                                   if (date != null) {
                                     if (!controller.addLeaveDate(date)) {
-                                      Get.snackbar(
+                                      CustomToast.showError(
+                                        context,
                                         "Limit Reached",
                                         "You can only select up to 4 dates.",
-                                        backgroundColor: AppColors.warning,
-                                        colorText: Colors.white,
                                       );
                                     }
                                   }
@@ -546,12 +543,10 @@ class LeaveManagementView extends GetView<DashboardController> {
             height: 56,
             child: ElevatedButton(
               onPressed: () {
-                Get.snackbar(
+                CustomToast.showSuccess(
+                  context,
                   "Success",
                   "Leave application submitted successfully!",
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: AppColors.success,
-                  colorText: Colors.white,
                 );
               },
               style: ElevatedButton.styleFrom(

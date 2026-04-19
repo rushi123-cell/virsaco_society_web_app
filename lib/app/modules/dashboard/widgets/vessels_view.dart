@@ -6,6 +6,7 @@ import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import '../dashboard_controller.dart';
 import '../../../../common/widgets/custom_pagination.dart';
+import 'add_store_item_form.dart';
 
 class VesselsView extends GetView<DashboardController> {
   final String vesselType; // "Glass" or "Plastic"
@@ -43,9 +44,9 @@ class VesselsView extends GetView<DashboardController> {
           const SizedBox(height: 32),
           Expanded(
             child: Obx(() {
-              return controller.selectedStationarySubSection.value == 0
-                  ? _buildIncomingItems(context)
-                  : _buildItemDistribution(context);
+              if (controller.selectedStationarySubSection.value == 0) return _buildIncomingItems(context);
+              if (controller.selectedStationarySubSection.value == 1) return _buildItemDistribution(context);
+              return AddStoreItemForm(category: "$vesselType Vessels");
             }),
           ),
         ],
@@ -75,6 +76,12 @@ class VesselsView extends GetView<DashboardController> {
               icon: Icons.logout_outlined,
               isSelected: controller.selectedStationarySubSection.value == 1,
               onTap: () => controller.selectedStationarySubSection.value = 1,
+            ),
+            _SubNavItem(
+              title: "Add Item",
+              icon: Icons.add_circle_outline,
+              isSelected: controller.selectedStationarySubSection.value == 2,
+              onTap: () => controller.selectedStationarySubSection.value = 2,
             ),
           ],
         ),
@@ -108,10 +115,7 @@ class VesselsView extends GetView<DashboardController> {
             decoration: InputDecoration(
               hintText: " Search $vesselType vessels...",
               hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.grey),
-              prefixIcon: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Image.asset(AppImages.search, width: 18, height: 18),
-              ),
+              prefixIcon: Icon(Icons.search),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
             ),
@@ -148,7 +152,7 @@ class VesselsView extends GetView<DashboardController> {
                                   Expanded(flex: 3, child: _headerText("Item Name")),
                                   Expanded(flex: 2, child: _headerText("Received Date")),
                                   Expanded(flex: 2, child: _headerText("Quantity")),
-                                  Expanded(flex: 3, child: _headerText("Source")),
+                                  Expanded(flex: 2, child: _headerText("Source")),
                                 ],
                               ),
                             ),
@@ -231,10 +235,7 @@ class VesselsView extends GetView<DashboardController> {
             decoration: InputDecoration(
               hintText: " Search usage history...",
               hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.grey),
-              prefixIcon: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Image.asset(AppImages.search, width: 18, height: 18),
-              ),
+              prefixIcon: Icon(Icons.search),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(vertical: 12),
             ),

@@ -9,6 +9,7 @@ import '../../../../common/widgets/custom_text_field.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../dashboard_controller.dart';
 import '../../../../common/widgets/custom_pagination.dart';
+import '../../../../common/widgets/custom_toast.dart';
 
 class EmployeeManagementView extends GetView<DashboardController> {
   const EmployeeManagementView({super.key});
@@ -163,10 +164,7 @@ class EmployeeListView extends GetView<DashboardController> {
                     decoration: InputDecoration(
                       hintText: "Search employee by name, ID or post...",
                       hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.grey),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Image.asset(AppImages.search, color: AppColors.primary, width: 18, height: 18),
-                      ),
+                      prefixIcon: Icon(Icons.search),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
@@ -206,8 +204,8 @@ class EmployeeListView extends GetView<DashboardController> {
                       _headerCell("MOBILE", 2),
                       _headerCell("JOB TITLE", 2),
                       _headerCell("POST", 2),
-                      _headerCell("EMAIL", 3),
-                      _headerCell("ACTIONS", 1),
+                      _headerCell("EMAIL", 2),
+                      _headerCell("ACTIONS", 2),
                     ],
                   ),
                 ),
@@ -309,19 +307,131 @@ class _EmployeeRowState extends State<_EmployeeRow> {
             Expanded(flex: 2, child: Text("+91 98765 43210", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
             Expanded(flex: 2, child: Text("Senior Researcher", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
             Expanded(flex: 2, child: Text("Management", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
-            Expanded(flex: 3, child: Text("employee${widget.empId}@virsaco.com", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
+            Expanded(flex: 2, child: Text("employee${widget.empId}@virsaco.com", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
             Expanded(
-              flex: 1,
-              child: Row(
+              flex: 2,
+              child: Wrap(
+                spacing: 0,
                 children: [
-                  IconButton(icon: const Icon(Icons.edit_outlined, color: AppColors.primary, size: 18), onPressed: () {}),
-                  IconButton(icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 18), onPressed: () {}),
+                  Tooltip(
+                    message: "Update Leaves",
+                    child: IconButton(
+                      icon: const Icon(Icons.edit_calendar_outlined, color: AppColors.primary, size: 18), 
+                      onPressed: () => _showUpdateLeaveDialog(context),
+                    ),
+                  ),
+                  Tooltip(
+                    message: "Edit Employee",
+                    child: IconButton(
+                      icon: const Icon(Icons.edit_outlined, color: AppColors.primary, size: 18), 
+                      onPressed: () {
+                        final controller = Get.find<DashboardController>();
+                        controller.changeEmployeeSubSection(1);
+                        CustomToast.showSuccess(context, "Edit Mode", "Ready to edit Employee ${widget.empId}'s profile.");
+                      },
+                    ),
+                  ),
+                  Tooltip(
+                    message: "Delete Employee",
+                    child: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 18), 
+                      onPressed: () => _showDeleteConfirmation(context),
+                    ),
+                  ),
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text("Delete Employee?", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppColors.secondary)),
+          content: Text("Are you sure you want to permanently remove Employee ${widget.empId}? This action cannot be undone.", style: GoogleFonts.inter(color: AppColors.grey)),
+          actionsPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text("Cancel", style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.grey)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Get.back();
+                CustomToast.showSuccess(
+                  context,
+                  "Employee Removed",
+                  "Employee ${widget.empId} has been successfully deleted.",
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                elevation: 0,
+              ),
+              child: Text("Delete", style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showUpdateLeaveDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Container(
+            width: 400,
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Update Leaves", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.secondary)),
+                const SizedBox(height: 8),
+                Text("Adjust CL and PL balances for Employee ${widget.empId}.", style: GoogleFonts.inter(fontSize: 14, color: AppColors.grey)),
+                const SizedBox(height: 24),
+                CustomTextField(
+                  hintText: "e.g., 12",
+                  labelText: "CL (Casual Leave) Balance",
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                CustomTextField(
+                  hintText: "e.g., 8",
+                  labelText: "PL (Paid Leave) Balance",
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: CustomButton(
+                    text: "Update Balances",
+                    onPressed: () {
+                      Get.back(); // Close dialog
+                      CustomToast.showSuccess(
+                        context,
+                        "Updated Successfully",
+                        "Leave balances for Employee ${widget.empId} have been updated.",
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -435,6 +545,24 @@ class _AddEmployeeViewState extends State<AddEmployeeView> {
             ]),
             const SizedBox(height: 24),
             Text(
+              "Leave Balances",
+              style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.secondary),
+            ),
+            const SizedBox(height: 16),
+            _buildGridForm([
+              CustomTextField(
+                hintText: "e.g., 12",
+                labelText: "CL (Casual Leave) Balance",
+                keyboardType: TextInputType.number,
+              ),
+              CustomTextField(
+                hintText: "e.g., 8",
+                labelText: "PL (Paid Leave) Balance",
+                keyboardType: TextInputType.number,
+              ),
+            ]),
+            const SizedBox(height: 24),
+            Text(
               "Documents",
               style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.secondary),
             ),
@@ -447,7 +575,11 @@ class _AddEmployeeViewState extends State<AddEmployeeView> {
               child: CustomButton(
                 text: "Register Employee",
                 onPressed: () {
-                  Get.snackbar("Success", "Employee added effectively", backgroundColor: AppColors.success, colorText: Colors.white, snackPosition: SnackPosition.BOTTOM);
+                  CustomToast.showSuccess(
+                    context,
+                    "Success",
+                    "Employee added effectively into the system.",
+                  );
                 },
               ),
             ),

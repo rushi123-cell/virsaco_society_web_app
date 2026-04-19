@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../common/widgets/custom_toast.dart';
 
 class ProfileController extends GetxController {
   final isEditing = false.obs;
@@ -23,19 +24,18 @@ class ProfileController extends GetxController {
     }
   }
 
-  Future<void> saveProfile() async {
+  Future<void> saveProfile(BuildContext context) async {
     isLoading.value = true;
     // Simulate API call
     await Future.delayed(const Duration(seconds: 1));
     isLoading.value = false;
     isEditing.value = false;
     
-    Get.snackbar(
+    // Using CustomToast
+    CustomToast.showSuccess(
+      context,
       "Success",
       "Profile updated successfully",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
     );
   }
 

@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import '../profile/profile_view.dart';
+import '../profile/profile_binding.dart';
 
 class DashboardController extends GetxController {
   final selectedIndex = 0.obs;
@@ -12,9 +14,12 @@ class DashboardController extends GetxController {
 
   // Role simulation
   final isDirector = false.obs;
+  final isEmployee = false.obs;
 
   // For Ground Management Sub-sections
   final selectedGroundSubSection = 0.obs; // 0: Field trial plot, 1: Poly house, 2: Net house, 3: Campus
+  final selectedGroundStockSubSection = 0.obs; // 0 for Stock In, 1 for Stock Out
+  final groundStockPage = 1.obs;
 
   // For Leave Management Sub-sections
   final selectedLeaveSubSection = 0.obs; // 0: Apply Leave, 1: Leave Status/Approvals
@@ -39,7 +44,14 @@ class DashboardController extends GetxController {
   final isLeaveListExpanded = true.obs;
   final leaveListPage = 1.obs;
 
+  // For Notifications
+  final notificationsPage = 1.obs;
+
   void changeIndex(int index) {
+    if (index == 7) {
+      Get.to(() => const ProfileView(), binding: ProfileBinding());
+      return;
+    }
     selectedIndex.value = index;
     // Reset sub-sections when switching main sections
     if (index != 1) {
@@ -48,7 +60,11 @@ class DashboardController extends GetxController {
       selectedStationarySubSection.value = 0;
     }
     if (index != 2) selectedHostelSubSection.value = 0;
-    if (index != 3) selectedGroundSubSection.value = 0;
+    if (index != 3) {
+      selectedGroundSubSection.value = 0;
+      selectedGroundStockSubSection.value = 0;
+      groundStockPage.value = 1;
+    }
     if (index != 5) {
       selectedLeaveSubSection.value = 0;
       resetLeaveForm();

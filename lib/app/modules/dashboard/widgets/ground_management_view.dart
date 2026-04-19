@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import '../dashboard_controller.dart';
+import '../../../../common/widgets/custom_pagination.dart';
 
 class GroundManagementView extends GetView<DashboardController> {
   const GroundManagementView({super.key});
@@ -208,61 +209,230 @@ class GroundManagementView extends GetView<DashboardController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Items Issue and Delivery ($sectionTitle)",
-          style: GoogleFonts.outfit(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: AppColors.secondary,
-          ),
+        Row(
+          children: [
+            Text(
+              "Tools & Materials ($sectionTitle)",
+              style: GoogleFonts.outfit(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: AppColors.secondary,
+              ),
+            ),
+            const Spacer(),
+            _buildStockSubNav(),
+          ],
         ),
         const SizedBox(height: 24),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 1000),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(12),
+        Obx(() {
+          return controller.selectedGroundStockSubSection.value == 0
+              ? _buildStockIn(context)
+              : _buildStockOut(context);
+        }),
+      ],
+    );
+  }
+
+  Widget _buildStockSubNav() {
+    return Obx(
+      () => Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: AppColors.lightGrey.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _SubNavItem(
+              title: "Stock In",
+              isSelected: controller.selectedGroundStockSubSection.value == 0,
+              onTap: () => controller.selectedGroundStockSubSection.value = 0,
+            ),
+            _SubNavItem(
+              title: "Stock Out",
+              isSelected: controller.selectedGroundStockSubSection.value == 1,
+              onTap: () => controller.selectedGroundStockSubSection.value = 1,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStockIn(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, 10)),
+        ],
+      ),
+      child: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 800),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                      decoration: const BoxDecoration(
+                        color: AppColors.secondary,
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(flex: 3, child: _headerText("Item Name")),
+                          Expanded(flex: 2, child: _headerText("Received Date")),
+                          Expanded(flex: 2, child: _headerText("Quantity")),
+                          Expanded(flex: 2, child: _headerText("Source")),
+                        ],
+                      ),
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(flex: 3, child: _headerText("Item Detail")),
-                        Expanded(flex: 2, child: _headerText("Issue Date")),
-                        Expanded(flex: 2, child: _headerText("Delivery Date")),
-                        Expanded(flex: 2, child: _headerText("Taken Date")),
-                        Expanded(flex: 2, child: _headerText("Status")),
-                      ],
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            _GroundStockInCard(
+                              item: index % 2 == 0 ? "Farming Tools Set" : "Fertilizers",
+                              date: "Apr 10, 2024",
+                              qty: "${(index + 1) * 5} Units",
+                              source: "Admin Dept.",
+                            ),
+                            if (index < 4) const Divider(height: 1, color: AppColors.lightGrey),
+                          ],
+                        );
+                      },
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 4,
-                    separatorBuilder: (context, index) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      return _ItemCard(
-                        detail: "Farming Tools Set #${100 + index}",
-                        issueDate: "Apr 10, 2024",
-                        deliveryDate: "Apr 11, 2024",
-                        takenDate: "Apr 12, 2024",
-                        status: index == 0 ? "Pending" : "Completed",
-                      );
-                    },
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            decoration: const BoxDecoration(
+              border: Border(top: BorderSide(color: AppColors.lightGrey)),
+            ),
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16,
+              runSpacing: 8,
+              children: [
+                Obx(() {
+                  const totalItems = 25;
+                  const itemsPerPage = 5;
+                  final start = (controller.groundStockPage.value - 1) * itemsPerPage + 1;
+                  final end = (controller.groundStockPage.value * itemsPerPage) > totalItems ? totalItems : (controller.groundStockPage.value * itemsPerPage);
+                  return Text(
+                    "Showing $start-$end of $totalItems",
+                    style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey, fontWeight: FontWeight.bold),
+                  );
+                }),
+                CustomPagination(currentPage: controller.groundStockPage, totalPages: 5),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStockOut(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, 10)),
+        ],
+      ),
+      child: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 1000),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(flex: 3, child: _headerText("Item Detail")),
+                          Expanded(flex: 2, child: _headerText("Issue Date")),
+                          Expanded(flex: 2, child: _headerText("Delivery Date")),
+                          Expanded(flex: 2, child: _headerText("Taken Date")),
+                          Expanded(flex: 2, child: _headerText("Status")),
+                        ],
+                      ),
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 5,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            _ItemCard(
+                              detail: "Farming Tools Set #${100 + index}",
+                              issueDate: "Apr 10, 2024",
+                              deliveryDate: "Apr 11, 2024",
+                              takenDate: "Apr 12, 2024",
+                              status: index == 0 ? "Pending" : "Completed",
+                            ),
+                            if (index < 4) const Divider(height: 1, color: AppColors.lightGrey),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            decoration: const BoxDecoration(
+              border: Border(top: BorderSide(color: AppColors.lightGrey)),
+            ),
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16,
+              runSpacing: 8,
+              children: [
+                Obx(() {
+                  const totalItems = 25;
+                  const itemsPerPage = 5;
+                  final start = (controller.groundStockPage.value - 1) * itemsPerPage + 1;
+                  final end = (controller.groundStockPage.value * itemsPerPage) > totalItems ? totalItems : (controller.groundStockPage.value * itemsPerPage);
+                  return Text(
+                    "Showing $start-$end of $totalItems",
+                    style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey, fontWeight: FontWeight.bold),
+                  );
+                }),
+                CustomPagination(currentPage: controller.groundStockPage, totalPages: 5),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -470,3 +640,61 @@ class _ItemCardState extends State<_ItemCard> {
     );
   }
 }
+
+
+class _GroundStockInCard extends StatefulWidget {
+  final String item;
+  final String date;
+  final String qty;
+  final String source;
+
+  const _GroundStockInCard({
+    required this.item,
+    required this.date,
+    required this.qty,
+    required this.source,
+  });
+
+  @override
+  State<_GroundStockInCard> createState() => _GroundStockInCardState();
+}
+
+class _GroundStockInCardState extends State<_GroundStockInCard> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        decoration: BoxDecoration(
+          color: _isHovered ? AppColors.secondary.withOpacity(0.05) : AppColors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: _isHovered ? AppColors.secondary.withOpacity(0.3) : Colors.transparent,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(_isHovered ? 0.08 : 0.03),
+              blurRadius: _isHovered ? 12 : 6,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(flex: 3, child: Text(widget.item, style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.secondary))),
+            Expanded(flex: 2, child: Text(widget.date, style: GoogleFonts.inter(color: AppColors.grey))),
+            Expanded(flex: 2, child: Text(widget.qty, style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.primary))),
+            Expanded(flex: 3, child: Text(widget.source, style: GoogleFonts.inter(color: AppColors.grey))),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+

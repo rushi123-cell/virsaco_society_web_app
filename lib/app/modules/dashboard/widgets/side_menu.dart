@@ -31,39 +31,59 @@ class SideMenu extends GetView<DashboardController> {
           const SizedBox(height: 24),
           Expanded(
             child: SingleChildScrollView(
-              child: Column(
-                 children: [
-                  _DrawerListTile(
-                    title: "Dashboard",
-                    index: 0,
-                    press: () => controller.changeIndex(0),
-                  ),
-                  _DrawerListTile(
-                    title: "Research Building",
-                    index: 1,
-                    press: () => controller.changeIndex(1),
-                  ),
-                  _DrawerListTile(
-                    title: "Hostel",
-                    index: 2,
-                    press: () => controller.changeIndex(2),
-                  ),
-                  _DrawerListTile(
-                    title: "Ground Management",
-                    index: 3,
-                    press: () => controller.changeIndex(3),
-                  ),
-                  _DrawerListTile(
-                    title: "Leave Management",
-                    index: 4,
-                    press: () => controller.changeIndex(4),
-                  ),
-                  _DrawerListTile(
-                    title: "Employee Management",
-                    index: 6,
-                    press: () => controller.changeIndex(6),
-                  ),
-                ],
+              child: Obx(
+                () => Column(
+                  children: controller.isEmployee.value
+                      ? [
+                          _DrawerListTile(
+                            title: "Leave Management",
+                            index: 4,
+                            press: () => controller.changeIndex(4),
+                          ),
+                          _DrawerListTile(
+                            title: "My Profile",
+                            index: 7,
+                            press: () => controller.changeIndex(7),
+                          ),
+                          _DrawerListTile(
+                            title: "My Items",
+                            index: 8,
+                            press: () => controller.changeIndex(8),
+                          ),
+                        ]
+                      : [
+                          _DrawerListTile(
+                            title: "Dashboard",
+                            index: 0,
+                            press: () => controller.changeIndex(0),
+                          ),
+                          _DrawerListTile(
+                            title: "Research Building",
+                            index: 1,
+                            press: () => controller.changeIndex(1),
+                          ),
+                          _DrawerListTile(
+                            title: "Hostel",
+                            index: 2,
+                            press: () => controller.changeIndex(2),
+                          ),
+                          _DrawerListTile(
+                            title: "Ground Management",
+                            index: 3,
+                            press: () => controller.changeIndex(3),
+                          ),
+                          _DrawerListTile(
+                            title: "Leave Management",
+                            index: 4,
+                            press: () => controller.changeIndex(4),
+                          ),
+                          _DrawerListTile(
+                            title: "Employee Management",
+                            index: 6,
+                            press: () => controller.changeIndex(6),
+                          ),
+                        ],
+                ),
               ),
             ),
           ),
@@ -75,7 +95,7 @@ class SideMenu extends GetView<DashboardController> {
           _DrawerListTile(
             title: "Settings",
             index: 5,
-            press: () {},
+            press: () => controller.changeIndex(5),
           ),
           _DrawerListTile(
             title: "Logout",

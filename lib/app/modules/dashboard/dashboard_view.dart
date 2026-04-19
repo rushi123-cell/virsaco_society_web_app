@@ -8,6 +8,9 @@ import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/leave_mana
 import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/research_building_view.dart';
 import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/side_menu.dart';
 import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/employee_management_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/my_items_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/settings_view.dart';
+import 'package:virsaco_society_web_app/app/modules/dashboard/widgets/notifications_view.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/utils/responsive.dart';
 import 'dashboard_controller.dart';
@@ -53,8 +56,14 @@ class DashboardView extends GetView<DashboardController> {
                           return const GroundManagementView();
                         case 4:
                           return const LeaveManagementView();
+                        case 5:
+                          return const SettingsView();
                         case 6:
                           return const EmployeeManagementView();
+                        case 8:
+                          return const MyItemsView();
+                        case 9:
+                          return const NotificationsView();
                         default:
                           return const HomeDashboardView();
                       }
@@ -94,7 +103,14 @@ class DashboardView extends GetView<DashboardController> {
           
           const Spacer(),
           
-          _HeaderActionIcon(icon: Icons.notifications_none_outlined, count: "5"),
+          _HeaderActionIcon(
+            icon: Icons.notifications_none_outlined,
+            count: "5",
+            onTap: () {
+              final dashboardController = Get.find<DashboardController>();
+              dashboardController.changeIndex(9);
+            },
+          ),
           const SizedBox(width: 20),
           _ProfileDropdown(),
         ],
@@ -106,15 +122,16 @@ class DashboardView extends GetView<DashboardController> {
 class _HeaderActionIcon extends StatelessWidget {
   final IconData icon;
   final String count;
+  final VoidCallback onTap;
 
-  const _HeaderActionIcon({required this.icon, required this.count});
+  const _HeaderActionIcon({required this.icon, required this.count, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         IconButton(
-          onPressed: () {},
+          onPressed: onTap,
           icon: Icon(icon, color: AppColors.grey, size: 26),
         ),
         Positioned(
