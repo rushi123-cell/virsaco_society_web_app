@@ -428,7 +428,6 @@ class LeaveManagementView extends GetView<DashboardController> {
                                   if (date != null) {
                                     if (!controller.addLeaveDate(date)) {
                                       CustomToast.showError(
-                                        context,
                                         "Limit Reached",
                                         "You can only select up to 4 dates.",
                                       );
@@ -544,7 +543,6 @@ class LeaveManagementView extends GetView<DashboardController> {
             child: ElevatedButton(
               onPressed: () {
                 CustomToast.showSuccess(
-                  context,
                   "Success",
                   "Leave application submitted successfully!",
                 );

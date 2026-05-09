@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app/routes/app_pages.dart';
+import 'app/bindings/initial_binding.dart';
 import 'common/values/app_colors.dart';
 import 'core/config/env_config.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.interTextTheme(Theme.of(context).textTheme),
         useMaterial3: true,
       ),
+      initialBinding: InitialBinding(),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       defaultTransition: Transition.fadeIn,

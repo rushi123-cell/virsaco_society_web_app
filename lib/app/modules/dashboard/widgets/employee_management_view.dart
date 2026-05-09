@@ -209,37 +209,67 @@ class EmployeeListView extends GetView<DashboardController> {
                     ],
                   ),
                 ),
-                // Table Rows
+                // Table Rows with StreamBuilder
                 Expanded(
-                  child: ListView.separated(
-                    itemCount: 10,
-                    separatorBuilder: (context, index) => const Divider(height: 1, color: AppColors.lightGrey),
-                    itemBuilder: (context, index) {
-                      final empId = (controller.employeeCurrentPage.value - 1) * 10 + index + 1;
-                      return _EmployeeRow(empId: empId);
+                  child: StreamBuilder<List<Map<String, dynamic>>>(
+                    stream: controller.getEmployeesStream(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(color: AppColors.primary),
+                        );
+                      }
+                      
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.people_outline, size: 64, color: AppColors.grey.withOpacity(0.5)),
+                              const SizedBox(height: 16),
+                              Text(
+                                "No employees found",
+                                style: GoogleFonts.inter(color: AppColors.grey, fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      final employees = snapshot.data!;
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: ListView.separated(
+                              itemCount: employees.length,
+                              separatorBuilder: (context, index) => const Divider(height: 1, color: AppColors.lightGrey),
+                              itemBuilder: (context, index) {
+                                return _EmployeeRow(data: employees[index]);
+                              },
+                            ),
+                          ),
+                          // Integrated Pagination (More compact)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            decoration: const BoxDecoration(
+                              border: Border(top: BorderSide(color: AppColors.lightGrey)),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Total Employees: ${employees.length}",
+                                  style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
                     },
                   ),
                 ),
-                // Integrated Pagination (More compact)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  decoration: const BoxDecoration(
-                    border: Border(top: BorderSide(color: AppColors.lightGrey)),
-                  ),
-                  child: Wrap(
-                    alignment: WrapAlignment.spaceBetween,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 16,
-                    runSpacing: 8,
-                    children: [
-                      Obx(() => Text(
-                        "Showing ${(controller.employeeCurrentPage.value - 1) * 10 + 1}-${(controller.employeeCurrentPage.value * 10) > totalEmployees ? totalEmployees : (controller.employeeCurrentPage.value * 10)} of $totalEmployees",
-                        style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey, fontWeight: FontWeight.bold),
-                      )),
-                      CustomPagination(currentPage: controller.employeeCurrentPage, totalPages: totalPages),
-                    ],
-                  ),
-                ),
+                // The footer/pagination should be inside or linked to the data
               ],
             ),
           ),
@@ -282,8 +312,8 @@ class EmployeeListView extends GetView<DashboardController> {
 }
 
 class _EmployeeRow extends StatefulWidget {
-  final int empId;
-  const _EmployeeRow({required this.empId});
+  final Map<String, dynamic> data;
+  const _EmployeeRow({required this.data});
 
   @override
   State<_EmployeeRow> createState() => _EmployeeRowState();
@@ -303,11 +333,11 @@ class _EmployeeRowState extends State<_EmployeeRow> {
         color: _isHovered ? AppColors.primary.withOpacity(0.02) : Colors.transparent,
         child: Row(
           children: [
-            Expanded(flex: 2, child: Text("Employee ${widget.empId}", style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.secondary))),
-            Expanded(flex: 2, child: Text("+91 98765 43210", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
-            Expanded(flex: 2, child: Text("Senior Researcher", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
-            Expanded(flex: 2, child: Text("Management", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
-            Expanded(flex: 2, child: Text("employee${widget.empId}@virsaco.com", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
+            Expanded(flex: 2, child: Text(widget.data['fullName'] ?? "N/A", style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.secondary))),
+            Expanded(flex: 2, child: Text(widget.data['primaryMobile'] ?? "N/A", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
+            Expanded(flex: 2, child: Text(widget.data['jobTitle'] ?? "N/A", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
+            Expanded(flex: 2, child: Text(widget.data['post'] ?? "N/A", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
+            Expanded(flex: 2, child: Text(widget.data['email'] ?? "N/A", style: GoogleFonts.inter(color: AppColors.grey, fontSize: 13))),
             Expanded(
               flex: 2,
               child: Wrap(
@@ -325,9 +355,8 @@ class _EmployeeRowState extends State<_EmployeeRow> {
                     child: IconButton(
                       icon: const Icon(Icons.edit_outlined, color: AppColors.primary, size: 18), 
                       onPressed: () {
-                        final controller = Get.find<DashboardController>();
-                        controller.changeEmployeeSubSection(1);
-                        CustomToast.showSuccess(context, "Edit Mode", "Ready to edit Employee ${widget.empId}'s profile.");
+                        Get.find<DashboardController>().changeEmployeeSubSection(1);
+                        CustomToast.showSuccess("Edit Mode", "Ready to edit ${widget.data['fullName']}'s profile.");
                       },
                     ),
                   ),
@@ -354,7 +383,7 @@ class _EmployeeRowState extends State<_EmployeeRow> {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text("Delete Employee?", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: AppColors.secondary)),
-          content: Text("Are you sure you want to permanently remove Employee ${widget.empId}? This action cannot be undone.", style: GoogleFonts.inter(color: AppColors.grey)),
+          content: Text("Are you sure you want to permanently remove ${widget.data['fullName']}? This action cannot be undone.", style: GoogleFonts.inter(color: AppColors.grey)),
           actionsPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           actions: [
             TextButton(
@@ -365,9 +394,8 @@ class _EmployeeRowState extends State<_EmployeeRow> {
               onPressed: () {
                 Get.back();
                 CustomToast.showSuccess(
-                  context,
                   "Employee Removed",
-                  "Employee ${widget.empId} has been successfully deleted.",
+                  "${widget.data['fullName']} has been successfully deleted.",
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -398,7 +426,7 @@ class _EmployeeRowState extends State<_EmployeeRow> {
               children: [
                 Text("Update Leaves", style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.secondary)),
                 const SizedBox(height: 8),
-                Text("Adjust CL and PL balances for Employee ${widget.empId}.", style: GoogleFonts.inter(fontSize: 14, color: AppColors.grey)),
+                Text("Adjust CL and PL balances for ${widget.data['fullName']}.", style: GoogleFonts.inter(fontSize: 14, color: AppColors.grey)),
                 const SizedBox(height: 24),
                 CustomTextField(
                   hintText: "e.g., 12",
@@ -420,9 +448,8 @@ class _EmployeeRowState extends State<_EmployeeRow> {
                     onPressed: () {
                       Get.back(); // Close dialog
                       CustomToast.showSuccess(
-                        context,
                         "Updated Successfully",
-                        "Leave balances for Employee ${widget.empId} have been updated.",
+                        "Leave balances for ${widget.data['fullName']} have been updated.",
                       );
                     },
                   ),
@@ -447,11 +474,33 @@ class AddEmployeeView extends StatefulWidget {
 class _AddEmployeeViewState extends State<AddEmployeeView> {
   String? selectedGender;
   String selectedFileName = "No file chosen";
-  final TextEditingController _birthdateController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _ageController = TextEditingController();
+  final _birthdateController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _jobTitleController = TextEditingController();
+  final _postController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _mobile1Controller = TextEditingController();
+  final _mobile2Controller = TextEditingController();
+  final _clBalanceController = TextEditingController();
+  final _plBalanceController = TextEditingController();
 
   @override
   void dispose() {
+    _nameController.dispose();
+    _ageController.dispose();
     _birthdateController.dispose();
+    _addressController.dispose();
+    _jobTitleController.dispose();
+    _postController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _mobile1Controller.dispose();
+    _mobile2Controller.dispose();
+    _clBalanceController.dispose();
+    _plBalanceController.dispose();
     super.dispose();
   }
 
@@ -474,10 +523,12 @@ class _AddEmployeeViewState extends State<AddEmployeeView> {
             const SizedBox(height: 16),
             _buildGridForm([
               CustomTextField(
+                controller: _nameController,
                 hintText: "Enter full name",
                 labelText: "Full Name",
               ),
               CustomTextField(
+                controller: _ageController,
                 hintText: "Enter age",
                 labelText: "Age",
                 keyboardType: TextInputType.number,
@@ -503,6 +554,7 @@ class _AddEmployeeViewState extends State<AddEmployeeView> {
             ]),
             const SizedBox(height: 16),
             CustomTextField(
+              controller: _addressController,
               hintText: "Enter full home address",
               labelText: "Home Address",
               maxLines: 2,
@@ -515,18 +567,22 @@ class _AddEmployeeViewState extends State<AddEmployeeView> {
             const SizedBox(height: 16),
             _buildGridForm([
               CustomTextField(
+                controller: _jobTitleController,
                 hintText: "Enter job title",
                 labelText: "Job Title",
               ),
               CustomTextField(
+                controller: _postController,
                 hintText: "Enter post",
                 labelText: "Post",
               ),
               CustomTextField(
+                controller: _emailController,
                 hintText: "Enter email address",
                 labelText: "Email ID",
               ),
               CustomTextField(
+                controller: _passwordController,
                 hintText: "Enter password",
                 labelText: "Password",
                 isPassword: true,
@@ -535,10 +591,12 @@ class _AddEmployeeViewState extends State<AddEmployeeView> {
             const SizedBox(height: 16),
             _buildGridForm([
               CustomTextField(
+                controller: _mobile1Controller,
                 hintText: "Mobile Number 1",
                 labelText: "Primary Mobile",
               ),
               CustomTextField(
+                controller: _mobile2Controller,
                 hintText: "Mobile Number 2",
                 labelText: "Alternate Mobile",
               ),
@@ -551,11 +609,13 @@ class _AddEmployeeViewState extends State<AddEmployeeView> {
             const SizedBox(height: 16),
             _buildGridForm([
               CustomTextField(
+                controller: _clBalanceController,
                 hintText: "e.g., 12",
                 labelText: "CL (Casual Leave) Balance",
                 keyboardType: TextInputType.number,
               ),
               CustomTextField(
+                controller: _plBalanceController,
                 hintText: "e.g., 8",
                 labelText: "PL (Paid Leave) Balance",
                 keyboardType: TextInputType.number,
@@ -569,20 +629,40 @@ class _AddEmployeeViewState extends State<AddEmployeeView> {
             const SizedBox(height: 16),
             _buildFileUpload(),
             const SizedBox(height: 32),
-            SizedBox(
+            Obx(() => SizedBox(
               width: double.infinity,
               height: 56,
               child: CustomButton(
                 text: "Register Employee",
+                isLoading: Get.find<DashboardController>().isRegisteringEmployee.value,
                 onPressed: () {
-                  CustomToast.showSuccess(
-                    context,
-                    "Success",
-                    "Employee added effectively into the system.",
+                  final controller = Get.find<DashboardController>();
+                  
+                  if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+                    CustomToast.showError("Error", "Email and Password are required");
+                    return;
+                  }
+
+                  controller.registerEmployee(
+                    email: _emailController.text.trim(),
+                    password: _passwordController.text.trim(),
+                    userData: {
+                      'fullName': _nameController.text.trim(),
+                      'age': _ageController.text.trim(),
+                      'birthdate': _birthdateController.text.trim(),
+                      'gender': selectedGender,
+                      'address': _addressController.text.trim(),
+                      'jobTitle': _jobTitleController.text.trim(),
+                      'post': _postController.text.trim(),
+                      'primaryMobile': _mobile1Controller.text.trim(),
+                      'alternateMobile': _mobile2Controller.text.trim(),
+                      'clBalance': _clBalanceController.text.trim(),
+                      'plBalance': _plBalanceController.text.trim(),
+                    },
                   );
                 },
               ),
-            ),
+            )),
           ],
         ),
       ),

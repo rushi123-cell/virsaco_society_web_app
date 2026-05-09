@@ -110,7 +110,6 @@ class _AddStoreItemFormState extends State<AddStoreItemForm> {
                   text: "Add Item to Stock",
                   onPressed: () {
                     CustomToast.showSuccess(
-                      context,
                       "Item Added",
                       "${widget.category} Item added successfully into the inventory stock!",
                     );

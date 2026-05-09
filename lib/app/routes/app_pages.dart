@@ -4,6 +4,7 @@ import '../modules/auth/login/login_binding.dart';
 import '../modules/dashboard/dashboard_view.dart';
 import '../modules/dashboard/dashboard_binding.dart';
 import '../modules/auth/forgot_password/forgot_password_view.dart';
+import '../modules/auth/forgot_password/forgot_password_binding.dart';
 import '../modules/profile/profile_view.dart';
 import '../modules/profile/profile_binding.dart';
 
@@ -28,6 +29,7 @@ class AppPages {
     GetPage(
       name: _Paths.FORGOT_PASSWORD,
       page: () => const ForgotPasswordView(),
+      binding: ForgotPasswordBinding(),
     ),
     GetPage(
       name: _Paths.PROFILE,

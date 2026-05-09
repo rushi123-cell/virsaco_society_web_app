@@ -5,7 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f56ab788-06f1-43bb-97c5-1c958fb9ef5d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/virsaco_society_web_app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/virsaco_society_web_app.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/.gradle/8.12/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/8.12/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/.gradle/8.12/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/android/.gradle/8.12/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/auth/forgot_password/forgot_password_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/auth/forgot_password/forgot_password_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/auth/login/login_binding.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/auth/login/login_binding.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/auth/login/login_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/auth/login/login_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/dashboard/dashboard_binding.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/dashboard/dashboard_binding.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/dashboard/dashboard_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/dashboard/dashboard_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/add_store_item_form.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/add_store_item_form.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/employee_management_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/employee_management_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/leave_management_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/leave_management_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/my_items_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/my_items_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/research_building_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/research_building_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/settings_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/dashboard/widgets/settings_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/modules/profile/profile_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/modules/profile/profile_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/app/routes/app_pages.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/app/routes/app_pages.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/common/widgets/custom_toast.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/common/widgets/custom_toast.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

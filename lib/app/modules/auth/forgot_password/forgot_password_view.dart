@@ -5,8 +5,9 @@ import '../../../../common/utils/app_images.dart';
 import '../../../../common/values/app_colors.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../../../../common/widgets/custom_text_field.dart';
+import 'forgot_password_controller.dart';
 
-class ForgotPasswordView extends StatelessWidget {
+class ForgotPasswordView extends GetView<ForgotPasswordController> {
   const ForgotPasswordView({super.key});
 
   @override
@@ -39,14 +40,16 @@ class ForgotPasswordView extends StatelessWidget {
               ),
               const SizedBox(height: 48),
                CustomTextField(
+                controller: controller.emailController,
                 hintText: 'Enter your email',
                 labelText: 'Email Address',
               ),
-              SizedBox(height: 32),
-              CustomButton(
+              const SizedBox(height: 32),
+              Obx(() => CustomButton(
                 text: 'Send Reset Link',
-                onPressed: () => Get.back(),
-              ),
+                isLoading: controller.isLoading.value,
+                onPressed: controller.sendResetLink,
+              )),
             ],
           ),
         ),

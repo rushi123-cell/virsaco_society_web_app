@@ -33,7 +33,6 @@ class ProfileController extends GetxController {
     
     // Using CustomToast
     CustomToast.showSuccess(
-      context,
       "Success",
       "Profile updated successfully",
     );

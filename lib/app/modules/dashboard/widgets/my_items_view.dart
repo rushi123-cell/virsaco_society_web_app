@@ -123,13 +123,13 @@ class MyItemsView extends GetView<DashboardController> {
           Expanded(
             child: ListView.separated(
               shrinkWrap: true,
-              itemCount: 4,
+              itemCount: 5,
               separatorBuilder: (context, index) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
-                final status = ["Returned", "Pending", "Broken", "Returned"][index];
+                final status = ["Returned", "Pending", "Broken", "Returned", "Returned"][index];
                 return _ItemRow(
-                  detail: ["Laptop (Dell XPS)", "Safety Helmet", "Glass Beakers", "ID Badge"][index],
-                  source: ["Stationary", "Ground Mgmt", "Research Bldg", "Admin"][index],
+                  detail: ["Laptop (Dell XPS)", "Safety Helmet", "Glass Beakers", "ID Badge", "Kitchen Knife Set"][index],
+                  source: ["Stationary", "Ground Mgmt", "Research Bldg", "Admin", "Kitchen"][index],
                   issueDate: "Apr ${10 - index}, 2024",
                   returnDate: status == "Pending" ? "-" : "Apr ${15 - index}, 2024",
                   status: status,

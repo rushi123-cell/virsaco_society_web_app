@@ -1,6 +1,10 @@
 import 'package:get/get.dart';
+
 import '../profile/profile_view.dart';
 import '../profile/profile_binding.dart';
+import '../../services/auth_service.dart';
+import '../../services/firestore_service.dart';
+import '../../../common/widgets/custom_toast.dart';
 
 class DashboardController extends GetxController {
   final selectedIndex = 0.obs;
@@ -31,6 +35,8 @@ class DashboardController extends GetxController {
   final selectedEmployeeSubSection = 0.obs; // 0: Employee List, 1: Add Employee
   final employeeCurrentPage = 1.obs;
   final employeesPerPage = 10;
+  final isLoadingEmployees = false.obs;
+  final isRegisteringEmployee = false.obs;
 
   // For Stationary Sub-sections
   final selectedStationarySubSection = 0.obs; // 0: Stock In, 1: Stock Out
@@ -121,7 +127,44 @@ class DashboardController extends GetxController {
     isDirector.value = !isDirector.value;
   }
 
-  void logout() {
+  final _authService = Get.find<AuthService>();
+  final _firestoreService = Get.find<FirestoreService>();
+
+  Stream<List<Map<String, dynamic>>> getEmployeesStream() {
+    return _firestoreService.getCollectionStream('users').map((snapshot) {
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    });
+  }
+
+  Future<void> registerEmployee({
+    required String email,
+    required String password,
+    required Map<String, dynamic> userData,
+  }) async {
+    isRegisteringEmployee.value = true;
+    try {
+      final credential = await _authService.signUpWithEmail(email, password);
+      if (credential != null) {
+        final now = DateTime.now().toIso8601String();
+        await _firestoreService.setDocument('users', credential.user!.uid, {
+          ...userData,
+          'uid': credential.user!.uid,
+          'createdAt': now,
+          'updatedAt': now,
+        });
+        
+        CustomToast.showSuccess("Success", "Employee registered successfully!");
+        changeEmployeeSubSection(0); // Go back to list
+      }
+    } catch (e) {
+      CustomToast.showError("Error", "Failed to register employee: $e");
+    } finally {
+      isRegisteringEmployee.value = false;
+    }
+  }
+
+  void logout() async {
+    await _authService.signOut();
     Get.offAllNamed('/login');
   }
 }

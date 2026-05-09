@@ -104,7 +104,7 @@ class SettingsView extends GetView<DashboardController> {
           title: "Export Organization Logs",
           subtitle: "Download all inventory and employee data as CSV",
           actionText: "Export CSV",
-          onTap: () => CustomToast.showSuccess(context, "Exporting Data", "Check your downloads folder shortly."),
+          onTap: () => CustomToast.showSuccess("Exporting Data", "Check your downloads folder shortly."),
         ),
         const Divider(height: 32, color: AppColors.lightGrey),
         _SettingsRow(
@@ -112,7 +112,7 @@ class SettingsView extends GetView<DashboardController> {
           title: "Database Backup",
           subtitle: "Last backup was successfully completed 2 days ago",
           actionText: "Backup Now",
-          onTap: () => CustomToast.showSuccess(context, "Backup Started", "Securing your latest metrics to the cloud."),
+          onTap: () => CustomToast.showSuccess("Backup Started", "Securing your latest metrics to the cloud."),
         ),
       ],
     );
@@ -224,7 +224,7 @@ class SettingsView extends GetView<DashboardController> {
             ElevatedButton(
               onPressed: () {
                 Get.back();
-                CustomToast.showSuccess(context, "Password Updated", "Your password has been changed successfully.");
+                CustomToast.showSuccess("Password Updated", "Your password has been changed successfully.");
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
               child: Text("Update Password", style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
@@ -252,7 +252,7 @@ class SettingsView extends GetView<DashboardController> {
             ElevatedButton(
               onPressed: () {
                 Get.back();
-                CustomToast.showSuccess(context, "Sessions Terminated", "All other sessions have been successfully logged out.");
+                CustomToast.showSuccess("Sessions Terminated", "All other sessions have been successfully logged out.");
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.error, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
               child: Text("Revoke Sessions", style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
@@ -290,7 +290,7 @@ class SettingsView extends GetView<DashboardController> {
             ElevatedButton(
               onPressed: () {
                 Get.back();
-                CustomToast.showSuccess(context, "Policies Updated", "New leave allocations applied globally.");
+                CustomToast.showSuccess("Policies Updated", "New leave allocations applied globally.");
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
               child: Text("Save Settings", style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
@@ -368,7 +368,7 @@ class SettingsView extends GetView<DashboardController> {
             ElevatedButton(
               onPressed: () {
                 Get.back();
-                CustomToast.showSuccess(context, currentRole.isEmpty ? "Role Created" : "Role Updated", "The role has been successfully saved.");
+                CustomToast.showSuccess(currentRole.isEmpty ? "Role Created" : "Role Updated", "The role has been successfully saved.");
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
               child: Text("Save", style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),
@@ -407,7 +407,7 @@ class SettingsView extends GetView<DashboardController> {
             ElevatedButton(
               onPressed: () {
                 Get.back();
-                CustomToast.showSuccess(context, "Modules Updated", "Dashboard modules reconfigured successfully.");
+                CustomToast.showSuccess( "Modules Updated", "Dashboard modules reconfigured successfully.");
               },
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
               child: Text("Save", style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.white)),

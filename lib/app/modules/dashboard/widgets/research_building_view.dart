@@ -7,6 +7,7 @@ import '../dashboard_controller.dart';
 import 'stationary_view.dart';
 import 'chemicals_view.dart';
 import 'vessels_view.dart';
+import 'kitchen_view.dart';
 import '../dashboard_view.dart';
 import '../../../../common/widgets/custom_pagination.dart';
 
@@ -74,6 +75,10 @@ class ResearchBuildingView extends GetView<DashboardController> {
                     case "Plastic Vessels":
                       currentView = const VesselsView(vesselType: "Plastic", icon: Icons.opacity);
                       title = "Plastic Vessels";
+                      break;
+                    case "Kitchen":
+                      currentView = const KitchenView();
+                      title = "Kitchen";
                       break;
                     default:
                       return _buildStoreRoom(context);
@@ -230,6 +235,7 @@ class ResearchBuildingView extends GetView<DashboardController> {
       {"name": "Glass Vessels", "icon": Icons.biotech, "color": Colors.teal},
       {"name": "Chemicals", "icon": Icons.science, "color": Colors.orange},
       {"name": "Plastic Vessels", "icon": Icons.opacity, "color": Colors.purple},
+      {"name": "Kitchen", "icon": Icons.restaurant, "color": Colors.redAccent},
     ];
 
     return Column(
