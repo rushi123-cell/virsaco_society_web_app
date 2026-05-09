@@ -156,7 +156,9 @@ class _HeaderActionIcon extends StatelessWidget {
   }
 }
 
-class _ProfileDropdown extends StatelessWidget {
+class _ProfileDropdown extends GetView<DashboardController> {
+  const _ProfileDropdown({super.key});
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -179,19 +181,19 @@ class _ProfileDropdown extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             if (!Responsive.isMobile(context))
-              Column(
+              Obx(() => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Rushita Ramani",
+                    controller.currentUserName.value,
                     style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.secondary),
                   ),
                   Text(
-                    "Administrator",
+                    controller.currentUserRole.value,
                     style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey),
                   ),
                 ],
-              ),
+              )),
             const SizedBox(width: 8),
             const Icon(Icons.keyboard_arrow_down, color: AppColors.grey),
           ],

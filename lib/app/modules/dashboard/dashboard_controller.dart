@@ -46,9 +46,17 @@ class DashboardController extends GetxController {
   final researchStaffPage = 1.obs;
 
   // Dashboard Stats
-  final onLeaveToday = 8.obs;
+  final totalStaff = 0.obs;
+  final onLeaveToday = 0.obs;
+  final presentToday = 0.obs;
+  final pendingTasks = 0.obs;
+  
   final isLeaveListExpanded = true.obs;
   final leaveListPage = 1.obs;
+
+  // Logged in User Data
+  final currentUserName = "User".obs;
+  final currentUserRole = "Member".obs;
 
   // For Notifications
   final notificationsPage = 1.obs;
@@ -76,6 +84,39 @@ class DashboardController extends GetxController {
       resetLeaveForm();
     }
     if (index != 6) selectedEmployeeSubSection.value = 0;
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchDashboardStats();
+    fetchCurrentUserData();
+  }
+
+  void fetchCurrentUserData() async {
+    final user = _authService.currentUser;
+    if (user != null) {
+      final doc = await _firestoreService.getDocument('users', user.uid);
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        currentUserName.value = data['fullName'] ?? "User";
+        currentUserRole.value = data['post'] ?? "Member";
+      }
+    }
+  }
+
+  void fetchDashboardStats() async {
+    // This could be optimized with Firestore aggregations or a separate stats doc
+    _firestoreService.getCollectionStream('users').listen((snapshot) {
+      totalStaff.value = snapshot.docs.length;
+      // For now, let's say 'present' is everyone who isn't explicitly on leave
+      // In a real app, you'd check a 'leaves' collection
+    });
+    
+    // Simulate some stats for now if leave collection doesn't exist yet, 
+    // but try to fetch if possible.
+    onLeaveToday.value = 0; 
+    presentToday.value = totalStaff.value;
   }
 
   void resetLeaveForm() {

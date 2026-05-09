@@ -51,16 +51,16 @@ class HomeDashboardView extends GetView<DashboardController> {
   }
 
   Widget _buildQuickStats(BuildContext context) {
-    return Wrap(
+    return Obx(() => Wrap(
       spacing: 24,
       runSpacing: 24,
       children: [
-        _StatCard(title: "Total Staff", count: "48", icon: Icons.people_outline, color: Colors.blue),
-        _StatCard(title: "Present Today", count: "32", icon: Icons.how_to_reg_outlined, color: Colors.teal),
-        _StatCard(title: "On Leave", count: "08", icon: Icons.event_busy_outlined, color: Colors.orange),
-        _StatCard(title: "Pending Tasks", count: "14", icon: Icons.assignment_late_outlined, color: Colors.purple),
+        _StatCard(title: "Total Staff", count: controller.totalStaff.value.toString(), icon: Icons.people_outline, color: Colors.blue),
+        _StatCard(title: "Present Today", count: controller.presentToday.value.toString(), icon: Icons.how_to_reg_outlined, color: Colors.teal),
+        _StatCard(title: "On Leave", count: controller.onLeaveToday.value.toString().padLeft(2, '0'), icon: Icons.event_busy_outlined, color: Colors.orange),
+        _StatCard(title: "Pending Tasks", count: controller.pendingTasks.value.toString().padLeft(2, '0'), icon: Icons.assignment_late_outlined, color: Colors.purple),
       ],
-    );
+    ));
   }
 
   Widget _buildOnLeaveSection(BuildContext context) {
