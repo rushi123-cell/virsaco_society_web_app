@@ -98,6 +98,11 @@ class SideMenu extends GetView<DashboardController> {
             press: () => controller.changeIndex(5),
           ),
           _DrawerListTile(
+            title: "Privacy Policy",
+            index: -2,
+            press: () => Get.toNamed('/privacy-policy'),
+          ),
+          _DrawerListTile(
             title: "Logout",
             index: -1,
             press: () => controller.logout(),

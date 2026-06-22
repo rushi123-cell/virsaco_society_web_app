@@ -20,13 +20,13 @@ class CustomPagination extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _PaginationActionBtn(
+          Obx(() => _PaginationActionBtn(
             icon: Icons.chevron_left,
             onTap: () {
               if (currentPage.value > 1) currentPage.value--;
             },
             enabled: currentPage.value > 1,
-          ),
+          )),
           const SizedBox(width: 12),
           Container(
             padding: const EdgeInsets.all(4),
@@ -46,13 +46,13 @@ class CustomPagination extends StatelessWidget {
             )),
           ),
           const SizedBox(width: 12),
-          _PaginationActionBtn(
+          Obx(() => _PaginationActionBtn(
             icon: Icons.chevron_right,
             onTap: () {
               if (currentPage.value < totalPages) currentPage.value++;
             },
             enabled: currentPage.value < totalPages,
-          ),
+          )),
         ],
       ),
     );

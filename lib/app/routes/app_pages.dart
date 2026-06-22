@@ -7,6 +7,8 @@ import '../modules/auth/forgot_password/forgot_password_view.dart';
 import '../modules/auth/forgot_password/forgot_password_binding.dart';
 import '../modules/profile/profile_view.dart';
 import '../modules/profile/profile_binding.dart';
+import '../modules/privacy_policy/privacy_policy_view.dart';
+import '../modules/privacy_policy/privacy_policy_binding.dart';
 
 part 'app_routes.dart';
 
@@ -35,6 +37,11 @@ class AppPages {
       name: _Paths.PROFILE,
       page: () => const ProfileView(),
       binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.PRIVACY_POLICY,
+      page: () => const PrivacyPolicyView(),
+      binding: PrivacyPolicyBinding(),
     ),
   ];
 }
