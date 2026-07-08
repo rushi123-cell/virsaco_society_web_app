@@ -7,21 +7,27 @@ class AuthService extends GetxService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Rx<User?> _firebaseUser = Rx<User?>(null);
 
+  bool _isInitialState = true;
+
   @override
   void onInit() {
     super.onInit();
     _firebaseUser.bindStream(_auth.authStateChanges());
-    // Wait a moment for the stream to initialize before redirecting
-    ever(_firebaseUser, _initialScreen);
+    
+    _firebaseUser.listen((user) {
+      if (_isInitialState) {
+        _isInitialState = false;
+        if (user != null) {
+          Get.offAllNamed('/dashboard');
+        }
+      } else {
+        if (user == null && Get.currentRoute != '/login') {
+          Get.offAllNamed('/login');
+        }
+      }
+    });
   }
 
-  void _initialScreen(User? user) {
-    if (user == null) {
-      Get.offAllNamed('/login');
-    } else {
-      Get.offAllNamed('/dashboard');
-    }
-  }
 
   Stream<User?> get userStream => _auth.authStateChanges();
 
