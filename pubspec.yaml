@@ -106,10 +106,10 @@ flutter:
 
 msix_config:
   display_name: VIRSACO
-  publisher_display_name: VIRSACO
-  identity_name: 12345YourName.VIRSACO
-  publisher: CN=12345678-ABCD-1234-ABCD-1234567890AB
-  msix_version: 1.0.0.0
+  publisher_display_name: Ramani Rushita
+  identity_name: RamaniRushita.VIRSACO
+  publisher: CN=17DC54D4-7C6B-4270-A5BB-36CD823F3B54
+  msix_version: 1.0.1.0
   logo_path: assets/images/logo.png
   description: VIRSACO Admin Portal for Society Management
   capabilities: internetClient
