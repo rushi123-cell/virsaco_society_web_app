@@ -7,23 +7,22 @@ class AuthService extends GetxService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Rx<User?> _firebaseUser = Rx<User?>(null);
 
-  bool _isInitialState = true;
-
   @override
   void onInit() {
     super.onInit();
     _firebaseUser.bindStream(_auth.authStateChanges());
     
-    _firebaseUser.listen((user) {
-      if (_isInitialState) {
-        _isInitialState = false;
-        if (user != null) {
-          Get.offAllNamed('/dashboard');
-        }
-      } else {
-        if (user == null && Get.currentRoute != '/login') {
-          Get.offAllNamed('/login');
-        }
+    // Auto-login check (runs safely after the first frame renders)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_auth.currentUser != null) {
+        Get.offAllNamed('/dashboard');
+      }
+    });
+
+    // Only auto-navigate on logout to avoid race conditions during login
+    ever(_firebaseUser, (User? user) {
+      if (user == null) {
+        Get.offAllNamed('/login');
       }
     });
   }
