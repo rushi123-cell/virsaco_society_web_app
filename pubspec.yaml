@@ -40,6 +40,7 @@ dependencies:
   firebase_core: ^4.7.0
   firebase_auth: ^6.4.0
   cloud_firestore: ^6.3.0
+  vclibs: ^0.1.3
 
 dev_dependencies:
   flutter_test:
@@ -109,7 +110,7 @@ msix_config:
   publisher_display_name: Ramani Rushita
   identity_name: RamaniRushita.VIRSACO
   publisher: CN=17DC54D4-7C6B-4270-A5BB-36CD823F3B54
-  msix_version: 1.0.1.0
+  msix_version: 1.0.2.0
   logo_path: assets/images/logo.png
   description: VIRSACO Admin Portal for Society Management
   capabilities: internetClient
