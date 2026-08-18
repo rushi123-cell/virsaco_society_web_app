@@ -139,67 +139,101 @@ class GroundManagementView extends GetView<DashboardController> {
               ),
             ),
             const Spacer(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
+            ElevatedButton.icon(
+              onPressed: () => _showAddWorkerDialog(context),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text("Add Worker"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: Text(
-                "Total: 12",
-                style: GoogleFonts.inter(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
+            ),
+            const SizedBox(width: 16),
+            StreamBuilder<List<Map<String, dynamic>>>(
+              stream: controller.getGroundWorkersStream(),
+              builder: (context, snapshot) {
+                final total = snapshot.data?.length ?? 0;
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    "Total: $total",
+                    style: GoogleFonts.inter(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                );
+              }
             ),
           ],
         ),
         const SizedBox(height: 24),
         // Worker Table
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 800),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    decoration: BoxDecoration(
-                      color: AppColors.secondary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(flex: 3, child: _headerText("Worker Name")),
-                        Expanded(flex: 2, child: _headerText("Shift")),
-                        Expanded(flex: 2, child: _headerText("Check-in")),
-                        Expanded(flex: 2, child: _headerText("Status")),
-                      ],
-                    ),
+        StreamBuilder<List<Map<String, dynamic>>>(
+          stream: controller.getGroundWorkersStream(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Container(
+                padding: const EdgeInsets.all(32),
+                alignment: Alignment.center,
+                child: Text("No workers assigned yet.", style: GoogleFonts.inter(color: AppColors.grey)),
+              );
+            }
+            final workers = snapshot.data!;
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 800),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width - (Responsive.isDesktop(context) ? 360 : 64),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(flex: 3, child: _headerText("Worker Name")),
+                            Expanded(flex: 2, child: _headerText("Shift")),
+                            Expanded(flex: 2, child: _headerText("Check-in")),
+                            Expanded(flex: 2, child: _headerText("Status")),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: workers.length,
+                        separatorBuilder: (context, index) => const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final worker = workers[index];
+                          return _WorkerCard(
+                            name: worker['name'] ?? '',
+                            shift: worker['shift'] ?? '',
+                            checkIn: worker['checkInTime'] ?? '',
+                            status: worker['status'] ?? 'On Duty',
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 5,
-                    separatorBuilder: (context, index) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      return _WorkerCard(
-                        name: "Worker ${index + 1}",
-                        shift: index % 2 == 0 ? "Morning" : "Evening",
-                        checkIn: "08:3${index} AM",
-                        status: "On Duty",
-                      );
-                    },
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          }
         ),
       ],
     );
@@ -220,6 +254,17 @@ class GroundManagementView extends GetView<DashboardController> {
               ),
             ),
             const Spacer(),
+            ElevatedButton.icon(
+              onPressed: () => _showAddStockDialog(context, controller.selectedGroundStockSubSection.value == 0),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text("Add Stock"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+            const SizedBox(width: 16),
             _buildStockSubNav(),
           ],
         ),
@@ -269,9 +314,25 @@ class GroundManagementView extends GetView<DashboardController> {
           BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, 10)),
         ],
       ),
-      child: Column(
-        children: [
-          SingleChildScrollView(
+      child: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: controller.getGroundStockInStream(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Padding(
+              padding: EdgeInsets.all(32),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.all(32),
+              alignment: Alignment.center,
+              child: Text("No stock in records.", style: GoogleFonts.inter(color: AppColors.grey)),
+            );
+          }
+          
+          final items = snapshot.data!;
+          return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: ConstrainedBox(
               constraints: const BoxConstraints(minWidth: 800),
@@ -290,24 +351,25 @@ class GroundManagementView extends GetView<DashboardController> {
                           Expanded(flex: 3, child: _headerText("Item Name")),
                           Expanded(flex: 2, child: _headerText("Received Date")),
                           Expanded(flex: 2, child: _headerText("Quantity")),
-                          Expanded(flex: 2, child: _headerText("Source")),
+                          Expanded(flex: 3, child: _headerText("Source")),
                         ],
                       ),
                     ),
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 5,
+                      itemCount: items.length,
                       itemBuilder: (context, index) {
+                        final item = items[index];
                         return Column(
                           children: [
                             _GroundStockInCard(
-                              item: index % 2 == 0 ? "Farming Tools Set" : "Fertilizers",
-                              date: "Apr 10, 2024",
-                              qty: "${(index + 1) * 5} Units",
-                              source: "Admin Dept.",
+                              item: item['itemName'] ?? '',
+                              date: item['receivedDate'] ?? '',
+                              qty: item['quantity'] ?? '',
+                              source: item['source'] ?? '',
                             ),
-                            if (index < 4) const Divider(height: 1, color: AppColors.lightGrey),
+                            if (index < items.length - 1) const Divider(height: 1, color: AppColors.lightGrey),
                           ],
                         );
                       },
@@ -316,33 +378,8 @@ class GroundManagementView extends GetView<DashboardController> {
                 ),
               ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AppColors.lightGrey)),
-            ),
-            child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 16,
-              runSpacing: 8,
-              children: [
-                Obx(() {
-                  const totalItems = 25;
-                  const itemsPerPage = 5;
-                  final start = (controller.groundStockPage.value - 1) * itemsPerPage + 1;
-                  final end = (controller.groundStockPage.value * itemsPerPage) > totalItems ? totalItems : (controller.groundStockPage.value * itemsPerPage);
-                  return Text(
-                    "Showing $start-$end of $totalItems",
-                    style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey, fontWeight: FontWeight.bold),
-                  );
-                }),
-                CustomPagination(currentPage: controller.groundStockPage, totalPages: 5),
-              ],
-            ),
-          ),
-        ],
+          );
+        }
       ),
     );
   }
@@ -356,9 +393,25 @@ class GroundManagementView extends GetView<DashboardController> {
           BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 20, offset: const Offset(0, 10)),
         ],
       ),
-      child: Column(
-        children: [
-          SingleChildScrollView(
+      child: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: controller.getGroundStockOutStream(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Padding(
+              padding: EdgeInsets.all(32),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.all(32),
+              alignment: Alignment.center,
+              child: Text("No stock out records.", style: GoogleFonts.inter(color: AppColors.grey)),
+            );
+          }
+          
+          final items = snapshot.data!;
+          return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: ConstrainedBox(
               constraints: const BoxConstraints(minWidth: 1000),
@@ -368,9 +421,9 @@ class GroundManagementView extends GetView<DashboardController> {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: AppColors.primary,
-                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
                       ),
                       child: Row(
                         children: [
@@ -385,18 +438,19 @@ class GroundManagementView extends GetView<DashboardController> {
                     ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 5,
+                      itemCount: items.length,
                       itemBuilder: (context, index) {
+                        final item = items[index];
                         return Column(
                           children: [
                             _ItemCard(
-                              detail: "Farming Tools Set #${100 + index}",
-                              issueDate: "Apr 10, 2024",
-                              deliveryDate: "Apr 11, 2024",
-                              takenDate: "Apr 12, 2024",
-                              status: index == 0 ? "Pending" : "Completed",
+                              detail: item['itemDetail'] ?? '',
+                              issueDate: item['issueDate'] ?? '',
+                              deliveryDate: item['deliveryDate'] ?? '',
+                              takenDate: item['takenDate'] ?? '',
+                              status: item['status'] ?? 'Pending',
                             ),
-                            if (index < 4) const Divider(height: 1, color: AppColors.lightGrey),
+                            if (index < items.length - 1) const Divider(height: 1, color: AppColors.lightGrey),
                           ],
                         );
                       },
@@ -405,33 +459,8 @@ class GroundManagementView extends GetView<DashboardController> {
                 ),
               ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AppColors.lightGrey)),
-            ),
-            child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 16,
-              runSpacing: 8,
-              children: [
-                Obx(() {
-                  const totalItems = 25;
-                  const itemsPerPage = 5;
-                  final start = (controller.groundStockPage.value - 1) * itemsPerPage + 1;
-                  final end = (controller.groundStockPage.value * itemsPerPage) > totalItems ? totalItems : (controller.groundStockPage.value * itemsPerPage);
-                  return Text(
-                    "Showing $start-$end of $totalItems",
-                    style: GoogleFonts.inter(fontSize: 12, color: AppColors.grey, fontWeight: FontWeight.bold),
-                  );
-                }),
-                CustomPagination(currentPage: controller.groundStockPage, totalPages: 5),
-              ],
-            ),
-          ),
-        ],
+          );
+        }
       ),
     );
   }
@@ -443,6 +472,143 @@ class GroundManagementView extends GetView<DashboardController> {
         color: Colors.white,
         fontWeight: FontWeight.bold,
         fontSize: 14,
+      ),
+    );
+  }
+
+  void _showAddWorkerDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    final shiftController = TextEditingController(text: 'Morning');
+    final checkInController = TextEditingController(text: '08:00 AM');
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Add Worker"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: "Worker Name", border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: shiftController,
+              decoration: const InputDecoration(labelText: "Shift (e.g. Morning, Evening)", border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: checkInController,
+              decoration: const InputDecoration(labelText: "Check-in Time", border: OutlineInputBorder()),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (nameController.text.isNotEmpty) {
+                controller.addGroundWorker({
+                  'name': nameController.text.trim(),
+                  'shift': shiftController.text.trim(),
+                  'checkInTime': checkInController.text.trim(),
+                  'status': 'On Duty',
+                  'createdAt': DateTime.now().toIso8601String(),
+                });
+                Navigator.pop(context);
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+            child: const Text("Add"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddStockDialog(BuildContext context, bool isStockIn) {
+    final nameController = TextEditingController();
+    final dateController = TextEditingController();
+    final qtyOrStatusController = TextEditingController();
+    final sourceOrDetailController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(isStockIn ? "Add Stock In" : "Add Stock Out"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: isStockIn ? "Item Name" : "Item Detail",
+                border: const OutlineInputBorder()
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: dateController,
+              decoration: InputDecoration(
+                labelText: isStockIn ? "Received Date (e.g. Apr 10, 2024)" : "Issue Date",
+                border: const OutlineInputBorder()
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: qtyOrStatusController,
+              decoration: InputDecoration(
+                labelText: isStockIn ? "Quantity" : "Status (Pending/Completed)",
+                border: const OutlineInputBorder()
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: sourceOrDetailController,
+              decoration: InputDecoration(
+                labelText: isStockIn ? "Source" : "Taken Date",
+                border: const OutlineInputBorder()
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (nameController.text.isNotEmpty) {
+                if (isStockIn) {
+                  controller.addGroundStockIn({
+                    'itemName': nameController.text.trim(),
+                    'receivedDate': dateController.text.trim(),
+                    'quantity': qtyOrStatusController.text.trim(),
+                    'source': sourceOrDetailController.text.trim(),
+                    'createdAt': DateTime.now().toIso8601String(),
+                  });
+                } else {
+                  controller.addGroundStockOut({
+                    'itemDetail': nameController.text.trim(),
+                    'issueDate': dateController.text.trim(),
+                    'status': qtyOrStatusController.text.trim(),
+                    'takenDate': sourceOrDetailController.text.trim(),
+                    'deliveryDate': dateController.text.trim(), // Simplification
+                    'createdAt': DateTime.now().toIso8601String(),
+                  });
+                }
+                Navigator.pop(context);
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+            child: const Text("Add"),
+          ),
+        ],
       ),
     );
   }

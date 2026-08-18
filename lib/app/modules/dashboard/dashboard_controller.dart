@@ -204,6 +204,67 @@ class DashboardController extends GetxController {
     }
   }
 
+  String get currentGroundSectionName {
+    switch (selectedGroundSubSection.value) {
+      case 0: return "Field Trial Plot";
+      case 1: return "Poly House";
+      case 2: return "Net House";
+      case 3: return "Campus";
+      default: return "Field Trial Plot";
+    }
+  }
+
+  Stream<List<Map<String, dynamic>>> getGroundWorkersStream() {
+    return _firestoreService.getCollectionStream('ground_workers').map((snapshot) {
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data()})
+          .where((data) => data['groundSection'] == currentGroundSectionName)
+          .toList();
+    });
+  }
+
+  Stream<List<Map<String, dynamic>>> getGroundStockInStream() {
+    return _firestoreService.getCollectionStream('ground_stock_in').map((snapshot) {
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data()})
+          .where((data) => data['groundSection'] == currentGroundSectionName)
+          .toList();
+    });
+  }
+
+  Stream<List<Map<String, dynamic>>> getGroundStockOutStream() {
+    return _firestoreService.getCollectionStream('ground_stock_out').map((snapshot) {
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data()})
+          .where((data) => data['groundSection'] == currentGroundSectionName)
+          .toList();
+    });
+  }
+
+  Future<void> addGroundWorker(Map<String, dynamic> data) async {
+    await _firestoreService.addDocument('ground_workers', {
+      ...data,
+      'groundSection': currentGroundSectionName,
+    });
+    CustomToast.showSuccess('Success', 'Worker added successfully');
+  }
+
+  Future<void> addGroundStockIn(Map<String, dynamic> data) async {
+    await _firestoreService.addDocument('ground_stock_in', {
+      ...data,
+      'groundSection': currentGroundSectionName,
+    });
+    CustomToast.showSuccess('Success', 'Stock In added successfully');
+  }
+
+  Future<void> addGroundStockOut(Map<String, dynamic> data) async {
+    await _firestoreService.addDocument('ground_stock_out', {
+      ...data,
+      'groundSection': currentGroundSectionName,
+    });
+    CustomToast.showSuccess('Success', 'Stock Out added successfully');
+  }
+
   void logout() async {
     await _authService.signOut();
     Get.offAllNamed('/login');
